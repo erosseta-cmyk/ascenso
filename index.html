@@ -313,7 +313,7 @@ const A={
  authReset(){authMode="reset";authMsg="";render()},
  authBack(){authMode="in";authMsg="";render()},
  passOpen(){view.pass=true;render()}, passClose(){view.pass=false;render()},
- async logout(){clearTimeout(saveT);await flush();await sb.auth.signOut()},
+ async logout(){clearTimeout(saveT);await flush();try{await pushDisable()}catch(e){}await sb.auth.signOut()},
  async adminReload(){await loadAdmin();render()},
  async adminSuspend(e){const{data}=await sb.rpc("admin_set_suspended",{p_email:e.dataset.email,p_value:e.dataset.v==="1"});if(data&&data.ok===false)toast(data.msg);await loadAdmin();await refreshMember();render()},
  legal(e){view.legal=e.dataset.k;render();window.scrollTo(0,0)}, closeLegal(){view.legal=null;render()},
@@ -372,7 +372,7 @@ function alShow(title,sub,id){const el=$("#alarmBox");if(!el)return;el.innerHTML
 function alFire(m){alCur=m.id;const d=today();AL.fired[d]=AL.fired[d]||{};AL.fired[d][m.id]=Date.now();for(const k in AL.fired)if(k!==d)delete AL.fired[k];delete AL.snooze[m.id];alSave();alShow(m.name,(m.time||"")+" · "+m.cat+" · "+m.xp+" XP",m.id);alNotify("Ascenso · es la hora",m.name,"m-"+m.id)}
 function alCheck(){try{if(!AL.on||!S.onboard||alCur)return;const d=today(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),done=S.done[d]||{},fired=AL.fired[d]||{};for(const m of dayMissions(d)){if(!m.time||done[m.id]||m.archived)continue;const sn=AL.snooze[m.id];if(sn){if(Date.now()>=sn)return alFire(m);continue}if(fired[m.id])continue;const[h,mi]=m.time.split(":").map(Number),t=h*60+mi;if(nm>=t&&nm-t<=15)return alFire(m)}}catch(e){}}
 setInterval(alCheck,15000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")alCheck()});
-function vAvisos(){const np=("Notification" in window)?Notification.permission:"nd";return`<div class="card"><h3>Avisos de tus misiones</h3><p class="mute">A la hora de cada misión la app suena como alarma, vibra y te muestra un aviso con Hecho y Posponer 10 minutos.</p><label class="chk"><input type="checkbox" id="alOn" ${AL.on?"checked":""}> Alarma con sonido activada en este dispositivo</label><div class="row"><button class="btn" data-act="alTest">Probar alarma</button>${np==="default"?`<button class="btn" data-act="alPerm">Permitir notificaciones</button>`:""}</div><p class="mute small">Notificaciones del teléfono: <b>${np==="granted"?"permitidas":np==="denied"?"bloqueadas en este dispositivo":np==="default"?"sin permiso todavía":"no disponibles aquí"}</b>.</p><p class="mute small"><b>Límite importante:</b> la alarma funciona con la app abierta o recién minimizada. Con la app cerrada del todo todavía no suena; como respaldo, cada misión tiene el enlace «Google Calendar».</p></div>`}
+function vAvisos(){const np=("Notification" in window)?Notification.permission:"nd";return`<div class="card"><h3>Avisos de tus misiones</h3><p class="mute">A la hora de cada misión la app suena como alarma, vibra y te muestra un aviso con Hecho y Posponer 10 minutos.</p><label class="chk"><input type="checkbox" id="alOn" ${AL.on?"checked":""}> Alarma con sonido activada en este dispositivo</label><div class="row"><button class="btn" data-act="alTest">Probar alarma</button>${np==="default"?`<button class="btn" data-act="alPerm">Permitir notificaciones</button>`:""}</div><p class="mute small">Notificaciones del teléfono: <b>${np==="granted"?"permitidas":np==="denied"?"bloqueadas en este dispositivo":np==="default"?"sin permiso todavía":"no disponibles aquí"}</b>.</p>${typeof vPush==="function"?"":`<p class="mute small"><b>Límite importante:</b> la alarma funciona con la app abierta o recién minimizada. Como respaldo, cada misión tiene el enlace «Google Calendar».</p>`}</div>${typeof vPush==="function"?vPush():""}`}
 
 
 /* ===== Arranque: sesión, datos locales y luego la cuenta ===== */
@@ -383,11 +383,38 @@ async function doAuth(){const email=$("#auEmail").value.trim(),password=($("#auP
  catch(e){authMsg="!No se pudo conectar. Revisa tu conexión."}
  if(!session||authMode==="reset")render()}
 async function afterAuth(){if(!session){S=blank();M=null;ADM=null;tab="dia";view={};render();return}
- LS="ascenso."+session.user.id;S=blank();loadLocal();render();await refreshMember();const okp=await pull(false);render();if(!dirty)$("#syncState").textContent=okp?"guardado en tu cuenta":"sin conexión, guardado en este dispositivo"}
+ LS="ascenso."+session.user.id;S=blank();loadLocal();render();await refreshMember();const okp=await pull(false);render();pushSync();if(!dirty)$("#syncState").textContent=okp?"guardado en tu cuenta":"sin conexión, guardado en este dispositivo"}
 sb.auth.onAuthStateChange((_e,s2)=>{if(_e==="PASSWORD_RECOVERY"){recovering=true;session=s2;authMsg="";render();return}const was=session&&session.user.id,now=s2&&s2.user.id;session=s2;if(was!==now)setTimeout(afterAuth,0)});
 sb.auth.getSession().then(({data})=>{session=data.session;afterAuth()});
 setInterval(()=>{if(session&&document.visibilityState==="visible")refreshMember()},300000);
 window.addEventListener("online",()=>{if(dirty)flush()});
+
+/* ===== Avisos con la app cerrada (Web Push) ===== */
+let PUSH={state:"off",busy:false};
+function b64u(x){const p="=".repeat((4-x.length%4)%4),b=atob((x+p).replace(/-/g,"+").replace(/_/g,"/"));return Uint8Array.from(b,c=>c.charCodeAt(0))}
+function swReady(){return Promise.race([navigator.serviceWorker.ready,new Promise((_,rej)=>setTimeout(()=>rej(new Error("sw")),1500))])}
+function pushSupported(){return"serviceWorker" in navigator&&"PushManager" in window&&"Notification" in window}
+function isIOS(){return/iPhone|iPad|iPod/i.test(navigator.userAgent)}
+function isStandalone(){return window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true}
+async function pushRegister(){const r=await swReady();const{data:key,error}=await sb.rpc("push_public_key");if(error||!key)throw new Error("key");
+ let sub=await r.pushManager.getSubscription();
+ if(sub){const cur=sub.options&&sub.options.applicationServerKey?btoa(String.fromCharCode(...new Uint8Array(sub.options.applicationServerKey))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""):null;if(cur&&cur!==key){await sub.unsubscribe();sub=null}}
+ if(!sub)sub=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(key)});
+ const j=sub.toJSON();let tz="America/Santiago";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||tz}catch(e){}
+ const{error:e2}=await sb.rpc("push_subscribe",{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_tz:tz});if(e2)throw new Error("save")}
+async function pushEnable(){if(PUSH.busy)return;if(!pushSupported())return toast("Este navegador no admite avisos con la app cerrada.");PUSH.busy=true;render();
+ try{const perm=await Notification.requestPermission();if(perm!=="granted"){PUSH.state=perm==="denied"?"denied":"off";toast("Sin permiso de notificaciones no puedo avisarte con la app cerrada.")}
+  else{await pushRegister();AL.push=true;alSave();PUSH.state="on";toast("Listo: te avisaré aunque la app esté cerrada")}}
+ catch(e){PUSH.state="off";toast("No se pudo activar. Revisa tu conexión e inténtalo de nuevo.")}
+ PUSH.busy=false;render()}
+async function pushDisable(){if(!pushSupported())return;try{const r=await swReady(),sub=await r.pushManager.getSubscription();if(sub){if(session)await sb.rpc("push_set_enabled",{p_endpoint:sub.endpoint,p_value:false});await sub.unsubscribe()}}catch(e){}AL.push=false;alSave();PUSH.state="off"}
+async function pushSync(){try{if(!pushSupported()){PUSH.state="nosup"}else if(Notification.permission==="denied"){PUSH.state="denied"}else if(AL.push&&session&&Notification.permission==="granted"){await pushRegister();PUSH.state="on"}else PUSH.state="off"}catch(e){PUSH.state="off"}if(tab==="ajustes"&&session&&S.onboard)render()}
+function vPush(){const st=PUSH.state,needInstall=isIOS()&&!isStandalone();
+ return`<div class="card"><h3>Avisos con la app cerrada</h3><p class="mute">Te llega una notificación a la hora de cada misión aunque no tengas Ascenso abierta, con la opción de posponer 10 minutos.</p>
+ <p>Estado en este dispositivo: <b>${st==="on"?"activados":st==="denied"?"bloqueados por el teléfono":st==="nosup"?"no disponibles en este navegador":"desactivados"}</b></p>
+ ${needInstall?`<div class="banner warn">En iPhone primero instala Ascenso en tu pantalla de inicio (Compartir → Agregar a inicio) y ábrela desde el ícono. Recién ahí se pueden activar.</div>`:st==="nosup"?"":st==="denied"?`<p class="mute small">Para desbloquearlos, abre los ajustes del teléfono → Notificaciones → Ascenso y permítelas.</p>`:`<div class="row">${st==="on"?`<button class="btn" data-act="pushOff">Desactivar en este dispositivo</button>`:`<button class="btn pri" data-act="pushOn" ${PUSH.busy?"disabled":""}>${PUSH.busy?"Activando…":"Activar avisos"}</button>`}</div>`}
+ <p class="mute small">El aviso usa el sonido de notificaciones de tu teléfono; el tono de alarma propio solo suena con la app abierta. Se activa por dispositivo: repítelo en cada teléfono que uses. Si el teléfono está en silencio o en modo «No molestar», no sonará.</p></div>`}
+setTimeout(()=>{A.pushOn=()=>pushEnable();A.pushOff=async()=>{await pushDisable();render();toast("Avisos desactivados en este dispositivo")}},0);
 </script>
 <script>
 (function(){
