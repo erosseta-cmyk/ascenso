@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f17">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ascenso">
+<meta name="description" content="Ascenso: organiza tus hábitos, registra tu constancia y sigue un plan de fuerza progresivo.">
+<title>Ascenso</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;1,700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: una columna de trabajo, barra de pestañas deslizable arriba, tarjetas solo para lo que se opera. Tema oscuro único, heredado de la app original. */
+:root{
+  color-scheme:dark;
+  --bg:#0b0f17; --panel:#121825; --panel2:#182033; --line:#26304a;
+  --fg:#eef1f7; --mute:#9aa6bf; --accent:#ff9a3d; --accent-ink:#1b1206;
+  --ok:#4fd1a1; --warn:#ffd166; --bad:#ff6b6b; --cool:#6fb7ff;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow","Segoe UI",system-ui,sans-serif;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:18px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:16px 4px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.mark{width:38px;height:38px;border-radius:10px;background:var(--accent);display:grid;place-items:center}
+.mark i{display:block;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid var(--accent-ink)}
+.brand b{font-family:var(--display);font-style:italic;font-weight:700;font-size:28px;letter-spacing:.5px;line-height:1}
+.brand small{display:block;color:var(--mute);font-size:11px;letter-spacing:2px;text-transform:uppercase}
+.who{text-align:right;font-size:13px;color:var(--mute)}
+.who b{display:block;color:var(--fg);font-size:15px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;scrollbar-width:none}
+nav.tabs button{background:none;border:0;color:var(--mute);font:500 15px var(--body);padding:12px 12px;white-space:nowrap;border-bottom:2px solid transparent;cursor:pointer}
+nav.tabs button[aria-current="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+h1{font-family:var(--display);font-weight:600;font-size:34px;line-height:1.05;margin:0;text-wrap:balance}
+h2{font-family:var(--display);font-weight:600;font-size:22px;margin:0}
+h3{font-size:16px;margin:0;font-weight:600}
+.eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mute)}
+p{margin:0}
+.mute{color:var(--mute)} .small{font-size:13px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row.sp{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.stack{display:flex;flex-direction:column;gap:14px}
+button.btn,a.btn{font:600 15px var(--body);border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--fg);padding:10px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+button.btn.pri,a.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.btn.danger{border-color:var(--bad);color:var(--bad)}
+button.btn:disabled{opacity:.45;cursor:not-allowed}
+button.link{background:none;border:0;color:var(--accent);font:inherit;padding:0;cursor:pointer;text-decoration:underline}
+:focus-visible{outline:2px solid var(--cool);outline-offset:2px}
+input,select,textarea{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+textarea{min-height:90px;resize:vertical}
+label{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--mute)}
+label.chk{flex-direction:row;align-items:flex-start;gap:10px;color:var(--fg);font-size:15px}
+label.chk input{width:20px;height:20px;flex:none;margin-top:2px}
+.pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+.pill.ok{color:var(--ok);border-color:var(--ok)} .pill.warn{color:var(--warn);border-color:var(--warn)} .pill.bad{color:var(--bad);border-color:var(--bad)} .pill.acc{color:var(--accent);border-color:var(--accent)}
+.banner{border-radius:var(--r);padding:12px 14px;border:1px solid var(--line);background:var(--panel2);font-size:15px}
+.banner.warn{border-color:var(--warn)} .banner.bad{border-color:var(--bad)} .banner.ok{border-color:var(--ok)}
+.mission{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel)}
+.mission.done{border-color:var(--ok)}
+.mission .t{font-variant-numeric:tabular-nums;font-weight:600;width:52px;flex:none;color:var(--cool)}
+.mission .n{flex:1;min-width:0}
+.mission .n b{display:block;overflow-wrap:anywhere}
+.check{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:none;color:var(--fg);font-size:18px;cursor:pointer;flex:none}
+.mission.done .check{background:var(--ok);border-color:var(--ok);color:var(--accent-ink)}
+.bar{height:10px;border-radius:99px;background:var(--panel2);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.stat b{font-family:var(--display);font-size:34px;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{display:block;font-size:13px;color:var(--mute)}
+.stage{border:1px solid var(--line);border-radius:var(--r);padding:12px;background:var(--panel);display:flex;flex-direction:column;gap:8px}
+.stage.cur{border-color:var(--accent)} .stage.lock{opacity:.55}
+.emblem{aspect-ratio:1;border-radius:10px;background:var(--panel2);display:grid;place-items:center;overflow:hidden;max-width:100%}
+.cal{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.cal .col{display:grid;grid-template-rows:repeat(7,1fr);gap:3px}
+.cal i{display:block;aspect-ratio:1;border-radius:3px;background:var(--panel2)}
+.cal i.pre{background:none;border:1px dashed var(--line)}
+.cal i.l1{background:#5a3a1a} .cal i.l2{background:#a8621f} .cal i.l3{background:var(--accent)}
+.cal i.fut{background:none}
+table{border-collapse:collapse;width:100%;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{color:var(--mute);font-weight:500}
+.scroll{overflow-x:auto}
+.timer{font-family:var(--display);font-size:44px;font-variant-numeric:tabular-nums;line-height:1}
+.scale{display:flex;gap:4px;flex-wrap:wrap}
+.scale button{width:36px;height:36px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:600 14px var(--body);cursor:pointer}
+.scale button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;max-width:calc(100% - 32px);z-index:20}
+details>summary{cursor:pointer;font-weight:600}
+.legal{white-space:pre-wrap;font-size:14px;color:var(--mute)}
+footer{color:var(--mute);font-size:13px;display:flex;gap:14px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:no-preference){.bar>i{transition:width .4s}}
+img{max-width:100%}[hidden]{display:none!important}body{margin:0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="mark" aria-hidden="true"><i></i></div><div><b id="appName"></b><small>De tu comienzo a tu cumbre</small></div></div>
+    <div class="who"><b id="whoName"></b><span id="whoLevel"></span> · <span id="syncState">guardando en este dispositivo</span></div>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Secciones"></nav>
+  <main id="main" class="stack"></main>
+  <footer><button class="link" data-act="legal" data-k="terms">Términos</button><button class="link" data-act="legal" data-k="privacy">Privacidad</button><button class="link" data-act="legal" data-k="health">Aviso de salud</button></footer>
+</div>
+<div id="toast" class="toast" hidden></div>
+
+<script>
+"use strict";
+/* ===== Configuración: cambia aquí nombre, precio y enlace de pago ===== */
+const SB_URL="https://gtwqhrmobusntfsqebdc.supabase.co",SB_KEY="sb_publishable_xy9LFEYQ_GqvJug-TtW9ow_Fpdh8JWu";
+const CFG={name:"Ascenso",price:9990,periodDays:30,trialDays:7,payUrl:"https://mpago.la/32LqSEt",consentVersion:"2026-10-05-v1"};
+const TABS=[["dia","Mi día"],["misiones","Misiones"],["entreno","Entreno"],["evolucion","Evolución"],["progreso","Progreso"],["bitacora","Bitácora"],["planes","Planes"],["ajustes","Ajustes"]];
+const CATS=["Cuerpo","Mente","Trabajo","Vida","Descanso"];
+const DOW=["dom","lun","mar","mié","jue","vie","sáb"], BYDAY=["SU","MO","TU","WE","TH","FR","SA"];
+const CATALOG=[["Tomar 2 vasos de agua al despertar","Cuerpo",20,"07:00"],["Caminar 10 minutos","Cuerpo",40,"08:00"],["Elongar 5 minutos","Cuerpo",20,"07:30"],["Comer una fruta","Cuerpo",20,"11:00"],["Almorzar sin pantallas","Cuerpo",20,"13:30"],["Subir escaleras en vez de ascensor","Cuerpo",20,""],["Pausa activa de 3 minutos","Cuerpo",20,"16:00"],["Leer 30 minutos","Mente",40,"21:00"],["Estudiar 25 minutos","Mente",60,"19:00"],["Respirar profundo 2 minutos","Mente",20,"12:00"],["Escribir 3 líneas en la bitácora","Mente",20,"22:00"],["Aprender algo nuevo 15 minutos","Mente",40,""],["Planificar el día","Trabajo",20,"08:30"],["Bloque de 45 min sin distracciones","Trabajo",60,"09:30"],["Ordenar el escritorio","Trabajo",20,"18:00"],["Revisar pendientes de mañana","Trabajo",20,"18:30"],["Hacer la cama","Vida",20,"07:15"],["Ordenar 10 minutos de la casa","Vida",40,"19:30"],["Preparar la ropa de mañana","Vida",20,"22:15"],["Llamar o escribir a alguien querido","Vida",20,""],["Revisar gastos del día","Vida",20,"21:30"],["Dejar el celular 30 min antes de dormir","Descanso",40,"22:30"],["Acostarse a la hora definida","Descanso",40,"23:00"],["Siesta o descanso de 15 minutos","Descanso",20,"15:00"]];
+const ROUTES={guerrero:{label:"Guerrero urbano",names:["Comienzo","Decisión","Explorador","Rutina","Impulso","Temple","Resistencia","Foco","Fuerza","Dominio","Mentor","Titán","Vanguardia","Leyenda","Maestría","Cumbre"]},aventurera:{label:"Aventurera urbana",names:["Comienzo","Decisión","Exploradora","Rutina","Impulso","Temple","Resistencia","Foco","Fuerza","Dominio","Mentora","Titán","Vanguardia","Leyenda","Maestría","Cumbre"]}};
+const ART={guerrero:{p:"g",have:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]},aventurera:{p:"a",have:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]}};
+const XP_STEPS=[0,100,180,300,450,650,900,1200,1600,2100,2700,3400,4200,5200,6400,8000];
+const PARQ=["¿Tienes una condición cardíaca o presión alta?","¿Sientes dolor en el pecho en reposo o al hacer actividad?","¿Has tenido mareos o pérdida de conciencia en los últimos 12 meses?","¿Tienes otra condición crónica diagnosticada?","¿Tomas medicamentos para una condición crónica?","¿Tienes un problema de huesos, articulaciones o músculos que empeora con la actividad?","¿Un médico te indicó hacer actividad solo con supervisión?","¿Embarazo, posparto o cirugía en los últimos 3 meses?"];
+const DAYSETS={"lun-mie-vie":{label:"Lunes, miércoles y viernes",d:[1,3,5]},"mar-jue-sab":{label:"Martes, jueves y sábado",d:[2,4,6]},"dom-mar-jue":{label:"Domingo, martes y jueves",d:[0,2,4]}};
+const STAGES=[
+ ["Base","Sentarse y pararse de una silla 2×8","Flexiones en pared 2×8","Puente de glúteos 2×10","Plancha con rodillas apoyadas 2×15 s"],
+ ["Control","Sentarse y pararse 3×10","Flexiones inclinadas en mesa 2×8","Puente de glúteos 3×12","Plancha con rodillas 3×20 s"],
+ ["Volumen","Sentadilla libre 3×10","Flexiones inclinadas 3×10","Puente a una pierna 2×8 por lado","Plancha 3×20 s"],
+ ["Fuerza","Sentadilla con pausa 3×10","Flexiones con rodillas 3×8","Zancada atrás 2×8 por lado","Plancha 3×30 s"],
+ ["Potencia","Sentadilla lenta 4×10","Flexiones completas 3×6","Zancada caminando 3×8 por lado","Plancha lateral 2×20 s por lado"],
+ ["Dominio","Sentadilla búlgara 3×8 por lado","Flexiones completas 4×8","Puente a una pierna 3×10 por lado","Plancha 3×45 s"]];
+const LEGAL={
+terms:"TÉRMINOS DE USO\n\nPrestador: [Razón social], RUT [RUT]. Contacto: [correo de privacidad].\n\n1. Qué es. Una aplicación para organizar hábitos, registrar actividad y seguir un plan general de ejercicio. No es un servicio de salud ni reemplaza una evaluación profesional.\n2. Edad. Solo para personas de 18 años o más.\n3. Acceso. 7 días de prueba gratis, una vez por cuenta. Después, $9.990 CLP por 30 días. No hay cobros automáticos. El acceso se activa cuando el administrador comprueba el pago; abrir el enlace de pago no lo activa.\n4. Vencimiento. Al vencer no puedes registrar nueva actividad, pero tu historial se conserva y siempre puedes descargarlo o borrarlo gratis.\n5. Devoluciones. [Definir política de devolución].\n6. Uso responsable. Los puntos reflejan constancia, no capacidad física. Detén la actividad ante dolor en el pecho, mareo, palpitaciones o falta de aire fuera de lo normal.",
+privacy:"POLÍTICA DE PRIVACIDAD (Ley 19.628 y Ley 21.719)\n\nResponsable: [Razón social], RUT [RUT]. Contacto: [correo de privacidad]. Alojamiento: [proveedor de hosting].\n\nQué datos tratamos y para qué:\n• Cuenta: nombre que eliges e identificador. Para darte acceso.\n• Actividad: misiones, cumplimiento, puntos y bitácora. Para mostrarte tu progreso.\n• Pagos: número de operación y fechas de acceso. Para activar tu membresía.\n• Salud (solo con tu autorización expresa y separada): cuestionario previo, esfuerzo, dolor y síntomas. Para ajustar tu plan de fuerza.\n\nCuánto tiempo: mientras tengas cuenta. Los datos de salud se borran al retirar la autorización. Todo se borra cuando eliminas tu cuenta.\n\nTus derechos: acceso, rectificación, supresión, oposición y portabilidad. Puedes descargar y borrar tus datos desde Ajustes, sin costo, o escribir a [correo de privacidad].",
+health:"AVISO DE SALUD\n\nEste plan es general y no fue diseñado para tu caso particular. No es rehabilitación ni tratamiento.\n\nConsulta con tu médico o kinesiólogo antes de empezar si respondiste Sí a alguna pregunta del cuestionario, si tienes dolor agudo, una cirugía reciente o una condición neurológica o cardíaca.\n\nCuándo detenerte: dolor en el pecho, mareo, palpitaciones o falta de aire fuera de lo normal. Si el dolor en el pecho no cede, llama al SAMU 131."};
+
+/* ===== Estado ===== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const dstr=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const today=()=>dstr(new Date());
+const pdate=s=>{const[a,b,c]=s.split("-").map(Number);return new Date(a,b-1,c)};
+const addDays=(s,n)=>{const d=pdate(s);d.setDate(d.getDate()+n);return dstr(d)};
+const fmtDate=s=>pdate(s).toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric"});
+const fmtDT=ms=>new Date(ms).toLocaleString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+const uid=()=>Math.random().toString(36).slice(2,10);
+const DAY=864e5;let LS="ascenso.anon";
+function blank(){return{v:1,updatedAt:0,created:today(),profile:{name:"Guerrero",route:"guerrero"},onboard:null,missions:[],done:{},journal:[],train:{parq:null,cleared:null,plan:null,stage:1,sessions:[]},member:{trialStart:null,periods:[],suspended:false,audit:[]},timer:null,ui:{}}}
+let S=blank(), tab="dia", view={}, saveT=null, saving=false, dirty=false;
+const sb=window.supabase.createClient(SB_URL,SB_KEY);let session=null,M=null,skew=0,ADM=null,authMode="in",authMsg="",recovering=false;
+function loadLocal(){try{const r=localStorage.getItem(LS);if(r){const o=JSON.parse(r);if(o&&o.v===1)S=Object.assign(blank(),o)}}catch(e){}}
+function cache(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function save(){S.updatedAt=Date.now();cache();if(session){dirty=true;clearTimeout(saveT);saveT=setTimeout(flush,1200)}}
+async function flush(){if(!session||saving||!dirty)return;saving=true;dirty=false;try{const{error}=await sb.rpc("save_state",{p_data:JSON.parse(JSON.stringify(S))});if(error){if(String(error.message).includes("MEMBRESIA_INACTIVA")){toast("Tu membresía no está vigente. No se guardó la actividad nueva.");await refreshMember();await pull(true);render()}else{$("#syncState").textContent="sin conexión, guardado en este dispositivo";dirty=true}}else $("#syncState").textContent="guardado en tu cuenta"}catch(e){$("#syncState").textContent="sin conexión, guardado en este dispositivo";dirty=true}saving=false;if(dirty&&navigator.onLine!==false){clearTimeout(saveT);saveT=setTimeout(flush,8000)}}
+async function refreshMember(){try{const{data,error}=await sb.rpc("my_membership");if(!error&&data){M=data;skew=Date.parse(data.server_now)-Date.now()}}catch(e){}}
+async function pull(force){try{const{data,error}=await sb.rpc("get_state");if(error)return false;if(data&&data.data&&data.data.v===1){if(force||(data.data.updatedAt||0)>=(S.updatedAt||0)){S=Object.assign(blank(),data.data);cache()}else{dirty=true;flush()}}else if(S.onboard){dirty=true;flush()}return true}catch(e){return false}}
+async function loadAdmin(){if(!M||!M.is_admin)return;try{const[a,b]=await Promise.all([sb.rpc("admin_list"),sb.rpc("admin_audit")]);ADM={list:a.data||[],audit:b.data||[]}}catch(e){}}
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,3200)}
+
+/* ===== Reglas ===== */
+function totalXP(){let x=0;for(const d in S.done)for(const m in S.done[d])x+=S.done[d][m];for(const s of S.train.sessions)x+=s.xp||0;return x}
+function stageIdx(xp){let i=0;XP_STEPS.forEach((v,k)=>{if(xp>=v)i=k});return i}
+function scheduled(m,day){if(m.archived&&m.archived<=day)return false;if(m.created>day)return false;return m.days.includes(pdate(day).getDay())}
+function dayMissions(day){return S.missions.filter(m=>scheduled(m,day)).sort((a,b)=>(a.time||"99:99").localeCompare(b.time||"99:99"))}
+function streak(){let n=0,d=today();if(!S.done[d]||!Object.keys(S.done[d]).length)d=addDays(d,-1);while(S.done[d]&&Object.keys(S.done[d]).length){n++;d=addDays(d,-1)}return n}
+function memberState(){const m=M||{status:"SIN MEMBRESÍA",active:false},exp=m.expires_at?Date.parse(m.expires_at):0,now=Date.now()+skew,active=!!m.active&&exp>now;let status=m.status;if(status==="ACTIVO"&&!active)status="VENCIDO";return{status,active,exp,kind:m.kind||"",days:active?Math.ceil((exp-now)/DAY):0}}
+function canRecord(){if(memberState().active)return true;toast("Activa tu prueba o renueva para registrar actividad.");tab="planes";render();return false}
+function parqFlags(){return(S.train.parq||[]).map((v,i)=>v?i:-1).filter(i=>i>=0)}
+function trainReady(){const t=S.train;if(!S.onboard?.health)return"consent";if(!t.parq)return"parq";if(parqFlags().length&&!t.cleared)return"paused";if(!t.plan)return"plan";return"ok"}
+function strengthAt(stage){return S.train.sessions.filter(s=>s.type==="fuerza"&&s.stage===stage)}
+function progression(){const t=S.train,last=t.sessions[0],two=strengthAt(t.stage).slice(0,2);
+  if(last&&(last.pain>=5||last.alert))return{state:"alert"};
+  if(last&&last.pain>=3)return{state:"hold"};
+  if(t.stage<6&&two.length===2&&two.every(s=>s.result==="completa"&&s.borg<=6&&s.pain<=2&&!s.alert))return{state:"advance"};
+  return{state:"keep"}}
+function todayTrain(){const p=S.train.plan;if(!p)return null;const dw=new Date().getDay();return DAYSETS[p.days].d.includes(dw)?"fuerza":"caminata"}
+
+/* ===== Render ===== */
+function render(){
+  $("#appName").textContent=CFG.name;const xp=totalXP(),si=stageIdx(xp);
+  $("#whoName").textContent=S.profile.name;$("#whoLevel").textContent="Nivel "+(si+1);
+  $("#tabs").innerHTML=TABS.map(([k,l])=>`<button data-act="tab" data-k="${k}" aria-current="${tab===k}">${l}</button>`).join("");
+  const m=$("#main");$("#tabs").hidden=!session;
+  if(view.legal){m.innerHTML=`<div class="card"><div class="legal">${esc(LEGAL[view.legal])}</div><div class="row"><button class="btn" data-act="closeLegal">Volver</button></div></div>`;return}
+  if(!session||recovering){$("#tabs").hidden=true;$("#whoName").textContent="";$("#whoLevel").textContent="";$("#syncState").textContent="sin sesión";m.innerHTML=vAuth();return}
+  if(!S.onboard){m.innerHTML=vOnboard();return}
+  m.innerHTML=({dia:vDia,misiones:vMisiones,entreno:vEntreno,evolucion:vEvolucion,progreso:vProgreso,bitacora:vBitacora,planes:vPlanes,ajustes:vAjustes})[tab]();
+  tickTimer();
+}
+function memberBanner(){const st=memberState();if(st.active)return st.days<=3?`<div class="banner warn">Tu acceso vence en ${st.days} ${st.days===1?"día":"días"} (${fmtDT(st.exp)}). <button class="link" data-act="tab" data-k="planes">Renovar</button></div>`:"";
+  return`<div class="banner warn">${st.status==="VENCIDO"?"Tu membresía terminó, pero tu progreso está guardado.":st.status==="SUSPENDIDO"?"Tu cuenta está suspendida.":"Activa tus 7 días de prueba para registrar actividad."} <button class="link" data-act="tab" data-k="planes">Ver planes</button></div>`}
+function vAuth(){const up=authMode==="up",rs=authMode==="reset";const msg=authMsg?`<div class="banner ${authMsg.startsWith("!")?"bad":"ok"}">${esc(authMsg.replace(/^!/,""))}</div>`:"";
+ if(recovering)return`<div class="card" style="max-width:460px"><div class="eyebrow">Recuperar acceso</div><h1>Elige una contraseña nueva.</h1><form id="newPassForm" class="stack"><label>Contraseña nueva (mínimo 8 caracteres)<input id="npPass" type="password" autocomplete="new-password" minlength="8" required></label><label>Repítela<input id="npPass2" type="password" autocomplete="new-password" minlength="8" required></label>${msg}<div class="row"><button class="btn pri" type="submit">Guardar contraseña</button></div></form></div>`;
+ if(rs)return`<div class="card" style="max-width:460px"><div class="eyebrow">Recuperar acceso</div><h1>¿Olvidaste tu contraseña?</h1><p class="mute">Escribe el correo de tu cuenta y te enviamos un enlace para elegir una contraseña nueva.</p><form id="authForm" class="stack"><label>Correo<input id="auEmail" type="email" autocomplete="email" required></label>${msg}<div class="row"><button class="btn pri" type="submit">Enviar enlace</button><button class="btn" type="button" data-act="authBack">Volver</button></div></form></div>`;
+ return`<div class="card" style="max-width:460px"><div class="eyebrow">${up?"Cuenta nueva":"Bienvenido"}</div><h1>${up?"Crea tu cuenta.":"Entra a tu cuenta."}</h1><p class="mute">Organiza tus hábitos, registra tu constancia y mira a tu personaje evolucionar en 16 etapas.</p>
+ <form id="authForm" class="stack"><label>Correo<input id="auEmail" type="email" autocomplete="email" required></label><label>Contraseña${up?" (mínimo 8 caracteres)":""}<input id="auPass" type="password" autocomplete="${up?"new-password":"current-password"}" minlength="${up?8:1}" required></label>
+ ${msg}
+ <div class="row"><button class="btn pri" type="submit">${up?"Crear cuenta":"Entrar"}</button><button class="btn" type="button" data-act="authMode">${up?"Ya tengo cuenta":"Crear cuenta nueva"}</button></div>${up?"":`<button class="link" type="button" data-act="authReset" style="align-self:flex-start">Olvidé mi contraseña</button>`}</form>
+ <p class="mute small">${CFG.trialDays} días de prueba gratis. Después, $${CFG.price.toLocaleString("es-CL")} por ${CFG.periodDays} días, sin cobros automáticos.</p></div>`}
+function vOnboard(){return`<div class="card"><div class="eyebrow">Antes de empezar</div><h1>Tres confirmaciones y partimos.</h1>
+ <label class="chk"><input type="checkbox" id="ob18"> Tengo 18 años o más.</label>
+ <label class="chk"><input type="checkbox" id="obTerms"><span>Acepto los <button class="link" data-act="legal" data-k="terms">Términos</button> y la <button class="link" data-act="legal" data-k="privacy">Política de privacidad</button>.</span></label>
+ <label class="chk"><input type="checkbox" id="obHealth"><span><b>Opcional.</b> Autorizo de forma expresa el tratamiento de mis datos de salud para ajustar mi plan. Puedo retirarla cuando quiera.<br><span class="mute small">Sin esta autorización los hábitos funcionan igual y el plan de fuerza queda desactivado.</span></span></label>
+ <label>¿Cómo quieres que te llamemos?<input id="obName" maxlength="30" value="${esc(S.profile.name)}"></label>
+ <div class="row"><button class="btn pri" data-act="onboard">Entrar</button></div></div>`}
+function emblem(i,locked){const n=i+1,rays=4+i,c=locked?"var(--line)":"var(--accent)";let r="";for(let k=0;k<rays;k++){const a=k/rays*Math.PI*2,x1=50+Math.cos(a)*30,y1=50+Math.sin(a)*30,x2=50+Math.cos(a)*(34+i),y2=50+Math.sin(a)*(34+i);r+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`}
+  return`<svg viewBox="0 0 100 100" width="100%" role="img" aria-label="Etapa ${n}"><circle cx="50" cy="50" r="26" fill="none" stroke="${c}" stroke-width="${2+i*.25}"/>${r}<text x="50" y="58" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="600" font-size="24" fill="${locked?"var(--mute)":"var(--fg)"}">${pad(n)}</text></svg>`}
+function art(i,locked){const a=ART[S.profile.route],n=i+1;if(!a.have.includes(n))return emblem(i,locked);return`<img src="evo/${a.p}${pad(n)}.jpg" alt="${esc(ROUTES[S.profile.route].names[i])}, etapa ${n}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;${locked?"filter:grayscale(1) brightness(.45)":""}">`}
+function vDia(){const d=today(),ms=dayMissions(d),done=S.done[d]||{},n=ms.filter(m=>done[m.id]).length,xp=totalXP(),si=stageIdx(xp),next=XP_STEPS[si+1],pct=next?Math.round((xp-XP_STEPS[si])/(next-XP_STEPS[si])*100):100,route=ROUTES[S.profile.route];
+ const tt=todayTrain(),tr=trainReady();
+ return`${memberBanner()}<div><div class="eyebrow">${new Date().toLocaleDateString("es-CL",{weekday:"long",day:"numeric",month:"long"})}</div><h1>Un día más fuerte.</h1></div>
+ <div class="grid2"><div class="card"><div class="row sp"><span class="pill acc">Tu forma actual</span><span class="pill">${xp} XP</span></div><div class="row"><div class="emblem" style="width:120px;flex:none">${art(si)}</div><div style="flex:1;min-width:0"><h2>${esc(route.names[si])}</h2><p class="mute small">${esc(route.label)} · etapa ${si+1} de 16</p></div></div><div class="bar"><i style="width:${pct}%"></i></div><p class="mute small">${next?`Faltan ${next-xp} XP para ${esc(route.names[si+1])}.`:"Llegaste a la última etapa."}</p></div>
+ <div class="card"><div class="row"><div class="stat" style="flex:1"><b>${n}/${ms.length}</b><span>misiones de hoy</span></div><div class="stat" style="flex:1"><b>${streak()}</b><span>días seguidos</span></div></div>${tr==="ok"?`<div class="banner">Hoy toca <b>${tt==="fuerza"?"fuerza · etapa "+S.train.stage:"caminata de "+S.train.plan.walk+" min"}</b>. <button class="link" data-act="tab" data-k="entreno">Ir a Entreno</button></div>`:`<p class="mute small">El plan de fuerza aún no está activo. <button class="link" data-act="tab" data-k="entreno">Configurarlo</button></p>`}</div></div>
+ ${vTimer()}
+ <div class="row sp"><h2>Misiones de hoy</h2><button class="btn pri" data-act="newMission">+ Nueva misión</button></div>
+ ${view.form?vMissionForm():""}
+ ${ms.length?ms.map(m=>missionRow(m,d,true)).join(""):`<div class="card"><h3>Tu próxima misión empieza aquí</h3><p class="mute">Crea una misión o elige entre los 24 hábitos sugeridos en Misiones.</p></div>`}`}
+function missionRow(m,d,act){const dn=(S.done[d]||{})[m.id];return`<div class="mission ${dn?"done":""}"><span class="t">${m.time||"—"}</span><div class="n"><b>${esc(m.name)}</b><span class="mute small">${m.cat} · ${m.xp} XP${m.dur?" · "+m.dur+" min":""} · ${m.days.length===7?"todos los días":m.days.map(x=>DOW[x]).join(", ")}</span><div class="row small" style="margin-top:4px">${m.dur&&act?`<button class="link" data-act="startTimer" data-id="${m.id}">Temporizador</button>`:""}${m.time?`<a class="link" style="color:var(--accent)" target="_blank" rel="noopener" href="${calUrl(m)}">Recordatorio</a>`:""}<button class="link" data-act="editMission" data-id="${m.id}">Editar</button></div></div>${act?`<button class="check" aria-label="${dn?"Desmarcar":"Marcar como cumplida"}" data-act="toggle" data-id="${m.id}">${dn?"✓":""}</button>`:""}</div>`}
+function calUrl(m){let d=today();for(let i=0;i<7&&!m.days.includes(pdate(d).getDay());i++)d=addDays(d,1);const[h,mi]=m.time.split(":").map(Number),s=d.replace(/-/g,"")+"T"+pad(h)+pad(mi)+"00",e=new Date(pdate(d).getTime()+(h*60+mi+15)*6e4),es=dstr(e).replace(/-/g,"")+"T"+pad(e.getHours())+pad(e.getMinutes())+"00";
+ let tz="America/Santiago";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||tz}catch(e){}
+ return"https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(m.name)+"&dates="+s+"/"+es+"&ctz="+encodeURIComponent(tz)+"&recur="+encodeURIComponent("RRULE:FREQ=WEEKLY;BYDAY="+m.days.map(x=>BYDAY[x]).join(","))}
+function vMissionForm(){const f=view.form;return`<form class="card" id="mForm"><h3>${f.id?"Editar misión":"Nueva misión"}</h3><label>Nombre<input id="mName" maxlength="60" required value="${esc(f.name||"")}"></label>
+ <div class="grid2"><label>Categoría<select id="mCat">${CATS.map(c=>`<option ${f.cat===c?"selected":""}>${c}</option>`).join("")}</select></label><label>Esfuerzo<select id="mXp">${[[20,"Liviano · 20 XP"],[40,"Medio · 40 XP"],[60,"Exigente · 60 XP"]].map(([v,l])=>`<option value="${v}" ${f.xp==v?"selected":""}>${l}</option>`).join("")}</select></label>
+ <label>Hora (opcional)<input id="mTime" type="time" value="${f.time||""}"></label><label>Duración en minutos (opcional)<input id="mDur" type="number" min="1" max="240" value="${f.dur||""}"></label></div>
+ <div><div class="mute small" style="margin-bottom:6px">Días</div><div class="row">${DOW.map((l,i)=>`<label class="chk"><input type="checkbox" class="mDay" value="${i}" ${(f.days||[0,1,2,3,4,5,6]).includes(i)?"checked":""}> ${l}</label>`).join("")}</div></div>
+ <div class="row"><button class="btn pri" type="submit">Guardar</button><button class="btn" type="button" data-act="cancelForm">Cancelar</button>${f.id?`<button class="btn danger" type="button" data-act="archive" data-id="${f.id}">Archivar</button>`:""}</div><p class="mute small">Archivar conserva los logros anteriores.</p></form>`}
+function vTimer(){const t=S.timer;if(!t)return"";const m=S.missions.find(x=>x.id===t.mid);return`<div class="card"><div class="row sp"><h3>${esc(m?m.name:"Temporizador")}</h3><span class="pill">${t.dur} min</span></div><div class="timer" id="tClock">--:--</div><div class="row"><button class="btn pri" data-act="timerToggle">${t.run?"Pausar":"Continuar"}</button><button class="btn" data-act="timerStop">Cerrar</button></div><p class="mute small" id="tNote">Al terminar suena un aviso. La misión no se marca sola: confírmala tú.</p></div>`}
+function timerElapsed(){const t=S.timer;return t?t.acc+(t.run?Date.now()-t.since:0):0}
+function tickTimer(){const el=$("#tClock");if(!el||!S.timer)return;const left=Math.max(0,S.timer.dur*6e4-timerElapsed()),s=Math.ceil(left/1e3);el.textContent=pad(Math.floor(s/60))+":"+pad(s%60);
+ if(left<=0&&!S.timer.rang){S.timer.rang=true;S.timer.run=false;S.timer.acc=S.timer.dur*6e4;save();beep();$("#tNote").textContent="Tiempo cumplido. Marca la misión si la hiciste.";toast("Tiempo cumplido")}}
+function beep(){try{const a=new(window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=.2;o.start();o.stop(a.currentTime+.6)}catch(e){}}
+function vMisiones(){const f=view.cat||"Todas",list=S.missions.filter(m=>!m.archived&&(f==="Todas"||m.cat===f)).sort((a,b)=>(a.time||"99:99").localeCompare(b.time||"99:99"));
+ return`${memberBanner()}<div class="row sp"><div><div class="eyebrow">Tu plan, a tu ritmo</div><h1>Misiones.</h1><p class="mute">Ordenadas por hora. Las que no tienen horario quedan al final.</p></div><div class="row"><button class="btn" data-act="toggleCatalog">Explorar 24 hábitos</button><button class="btn pri" data-act="newMission">+ Nueva misión</button></div></div>
+ <div class="row">${["Todas",...CATS].map(c=>`<button class="btn" data-act="cat" data-k="${c}" style="${f===c?"border-color:var(--accent);color:var(--accent)":""}">${c}</button>`).join("")}</div>
+ ${view.form?vMissionForm():""}
+ ${view.catalog?`<div class="card"><h3>Hábitos sugeridos</h3><div class="stack" style="gap:8px">${CATALOG.map((c,i)=>{const has=S.missions.some(m=>!m.archived&&m.name===c[0]);return`<div class="row sp"><span>${esc(c[0])} <span class="mute small">· ${c[1]} · ${c[2]} XP${c[3]?" · "+c[3]:""}</span></span><button class="btn" data-act="addCat" data-i="${i}" ${has?"disabled":""}>${has?"Agregado":"Agregar"}</button></div>`}).join("")}</div></div>`:""}
+ ${list.length?list.map(m=>missionRow(m,today(),false)).join(""):`<div class="card"><h3>Sin misiones en esta categoría</h3><p class="mute">Agrega una o elige entre los hábitos sugeridos.</p></div>`}`}
+function vEntreno(){const t=S.train,r=trainReady();let body="";
+ const stop=`<div class="card"><h3>Cuándo detenerte</h3><p>Detén la actividad ante dolor en el pecho, mareo, palpitaciones o falta de aire fuera de lo normal. No continúes para obtener puntos. <b>Si el dolor en el pecho no cede, llama al SAMU 131.</b></p><button class="link" data-act="legal" data-k="health" style="align-self:flex-start">Leer aviso de salud</button></div>`;
+ if(r==="consent")body=`<div class="card"><h3>Plan de fuerza desactivado</h3><p class="mute">Para ajustar el plan necesitamos tu autorización expresa para tratar datos de salud (cuestionario, esfuerzo, dolor y síntomas). Tus hábitos funcionan igual sin ella.</p><div class="row"><button class="btn pri" data-act="giveHealth">Autorizar datos de salud</button></div></div>`;
+ else if(r==="parq")body=`<form class="card" id="parqForm"><h3>Cuestionario previo</h3><p class="mute small">Responde Sí o No a las 8 preguntas.</p>${PARQ.map((q,i)=>`<div class="row sp"><span style="flex:1;min-width:200px">${i+1}. ${q}</span><span class="row"><label class="chk"><input type="radio" name="q${i}" value="1" required> Sí</label><label class="chk"><input type="radio" name="q${i}" value="0"> No</label></span></div>`).join("")}<div class="row"><button class="btn pri" type="submit">Guardar respuestas</button></div></form>`;
+ else if(r==="paused")body=`<div class="card"><div class="banner warn"><b>Consulta con tu médico o kinesiólogo antes de empezar.</b> Respondiste Sí en: ${parqFlags().map(i=>i+1).join(", ")}.</div><label class="chk"><input type="checkbox" id="clearChk"> Un profesional revisó mi caso y me autorizó.</label><div class="row"><button class="btn pri" data-act="clearPro">Confirmar autorización</button><button class="btn" data-act="redoParq">Responder de nuevo</button></div></div>`;
+ else if(r==="plan")body=`<form class="card" id="planForm"><h3>Crear mi plan de tres días</h3><label>3 días de fuerza por semana<select id="pDays">${Object.entries(DAYSETS).map(([k,v])=>`<option value="${k}">${v.label}</option>`).join("")}</select></label><label>Duración inicial de la caminata<select id="pWalk">${[5,10,15,20,30].map(n=>`<option value="${n}" ${n===10?"selected":""}>${n} minutos</option>`).join("")}</select></label><p class="mute small">Si estás retomando, elige 5 o 10 minutos y un ritmo cómodo. Puedes hacer menos y registrar lo que realmente hiciste.</p><div class="row"><button class="btn pri" type="submit">Activar mi plan</button></div></form>`;
+ else{const tt=todayTrain(),st=STAGES[t.stage-1],pr=progression();
+  body=`${pr.state==="alert"?`<div class="banner bad"><b>Tu último registro tuvo dolor alto o síntomas de alerta.</b> No avances. Si los síntomas siguen, consulta a un profesional. <button class="link" data-act="stageDown">Bajar una etapa</button></div>`:pr.state==="hold"?`<div class="banner warn">Dolor 3–4 en tu último registro: mantén la etapa actual.</div>`:pr.state==="advance"?`<div class="banner ok">Tus 2 últimas sesiones de fuerza fueron completas, con esfuerzo ≤6 y dolor ≤2. <button class="link" data-act="stageUp">Avanzar a la etapa ${t.stage+1}</button></div>`:""}
+  <div class="card"><div class="row sp"><h3>Hoy: ${tt==="fuerza"?"fuerza":"caminata"}</h3><span class="pill acc">Etapa ${t.stage} de 6 · ${st[0]}</span></div>${tt==="fuerza"?`<ul style="margin:0;padding-left:20px">${st.slice(1).map(x=>`<li>${x}</li>`).join("")}</ul><p class="mute small">Descansa 60–90 segundos entre series. Esfuerzo ideal: 4 a 6 de 10.</p>`:`<p>Camina ${t.plan.walk} minutos a un ritmo en que puedas conversar.</p>`}<p class="mute small">Días de fuerza: ${DAYSETS[t.plan.days].label}. <button class="link" data-act="resetPlan">Cambiar plan</button></p>
+  ${view.log?vLogForm(tt):`<div class="row"><button class="btn pri" data-act="openLog">Registrar sesión de hoy</button></div>`}</div>`}
+ const rows=t.sessions.slice(0,10);
+ return`${memberBanner()}<div><div class="eyebrow">A tu ritmo</div><h1>Entreno.</h1><p class="mute">Los XP reflejan constancia, no tu capacidad física ni tu carga.</p></div>${body}${stop}
+ ${S.onboard.health?`<div class="card"><h3>Últimos 10 registros</h3>${rows.length?`<div class="scroll"><table><tr><th>Fecha</th><th>Sesión</th><th>Resultado</th><th>Esfuerzo</th><th>Dolor</th><th>Alerta / nota</th></tr>${rows.map(s=>`<tr><td>${fmtDate(s.date)}</td><td>${s.type}${s.type==="fuerza"?" · E"+s.stage:""}</td><td>${s.result}</td><td>${s.borg}</td><td>${s.pain}</td><td>${s.alert?"⚠ síntomas · ":""}${esc(s.note||"")}</td></tr>`).join("")}</table></div>`:`<p class="mute">Aún no hay sesiones registradas.</p>`}</div>
+ <div class="card"><h3>Resumen de salud y entrenamiento</h3><p class="small"><b>Contiene datos de salud, compártelo solo con el personal de salud que te atienda.</b> Es un registro que llenaste tú, no una ficha clínica.</p><textarea id="kineTxt" readonly>${esc(kineSummary())}</textarea><div class="row"><button class="btn" data-act="copyKine">Copiar resumen</button></div></div>`:""}`}
+function scale(id,val){return`<div class="scale" data-scale="${id}">${Array.from({length:11},(_,i)=>`<button type="button" data-act="scale" data-s="${id}" data-v="${i}" aria-pressed="${val===i}">${i}</button>`).join("")}</div>`}
+function vLogForm(tt){const l=view.log;return`<form id="logForm" class="stack" style="border-top:1px solid var(--line);padding-top:12px"><div class="row"><label class="chk"><input type="radio" name="res" value="completa" ${l.result!=="parcial"?"checked":""}> Completa</label><label class="chk"><input type="radio" name="res" value="parcial" ${l.result==="parcial"?"checked":""}> Parcial</label></div>
+ <div><div class="mute small">Esfuerzo percibido (0 a 10, ideal 4 a 6)</div>${scale("borg",l.borg)}</div><div><div class="mute small">Dolor (0 a 10)</div>${scale("pain",l.pain)}</div>
+ <label class="chk"><input type="checkbox" id="logAlert" ${l.alert?"checked":""}> Tuve síntomas de alerta: dolor en el pecho, mareo, palpitaciones o falta de aire fuera de lo normal.</label>
+ <label>Nota (opcional)<input id="logNote" maxlength="140" value="${esc(l.note||"")}"></label><div class="row"><button class="btn pri" type="submit">Guardar registro</button><button class="btn" type="button" data-act="closeLog">Cancelar</button></div></form>`}
+function kineSummary(){const t=S.train,since=addDays(today(),-13),ss=t.sessions.filter(s=>s.date>=since),avg=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):"—",fl=parqFlags();
+ return[`Resumen de salud y entrenamiento · ${CFG.name}`,`Datos registrados por la propia persona. No es una ficha clínica ni un diagnóstico.`,`Fecha: ${fmtDate(today())}`,`Cuestionario previo: ${t.parq?(fl.length?"Sí en preguntas "+fl.map(i=>i+1).join(", ")+(t.cleared?" · autorizado por profesional el "+fmtDate(t.cleared):" · sin autorización registrada"):"todas No"):"sin responder"}`,...fl.map(i=>"  - "+PARQ[i]),`Etapa actual: ${t.stage} de 6`,`Días de fuerza: ${t.plan?DAYSETS[t.plan.days].label:"sin plan"}`,`Sesiones últimos 14 días: ${ss.length} (${ss.filter(s=>s.type==="fuerza").length} de fuerza, ${ss.filter(s=>s.result==="completa").length} completas)`,`Esfuerzo percibido promedio (0 a 10): ${avg(ss.map(s=>s.borg))}`,`Dolor promedio (0 a 10): ${avg(ss.map(s=>s.pain))} · máximo: ${ss.length?Math.max(...ss.map(s=>s.pain)):"—"}`,`Sesiones con alerta: ${ss.filter(s=>s.alert).length}`,`Notas:`,...ss.filter(s=>s.note).map(s=>`  - ${fmtDate(s.date)}: ${s.note}`)].join("\n")}
+function vEvolucion(){const xp=totalXP(),si=stageIdx(xp),route=ROUTES[S.profile.route];
+ return`<div class="row sp"><div><h1>Tu evolución.</h1><p class="mute">${si+1} de 16 etapas desbloqueadas.</p></div><span class="pill acc">${xp} XP</span></div>
+ <div class="card"><div class="row sp"><div><div class="eyebrow">Tu personaje</div><h3>Elige cómo ver tu evolución</h3><p class="mute small">Puedes cambiar cuando quieras. Conservas tus XP, hábitos y logros.</p></div><select id="routeSel" style="max-width:240px">${Object.entries(ROUTES).map(([k,v])=>`<option value="${k}" ${S.profile.route===k?"selected":""}>${v.label} · 16 etapas</option>`).join("")}</select></div></div>
+ <div class="grid3">${route.names.map((n,i)=>`<div class="stage ${i===si?"cur":""} ${i>si?"lock":""}"><div class="row sp"><span class="mute small">${pad(i+1)}</span>${i===si?`<span class="pill acc">Tu forma</span>`:i>si?`<span class="pill">Bloqueada</span>`:`<span class="pill ok">Lograda</span>`}</div><div class="emblem">${art(i,i>si)}</div><b>${esc(n)}</b><span class="mute small">${XP_STEPS[i]} XP</span></div>`).join("")}</div>
+ ${ART[S.profile.route].have.length<16?`<p class="mute small">A esta ruta le faltan ilustraciones; esas etapas muestran su emblema por ahora.</p>`:""}`}
+function dayStats(d){const ms=dayMissions(d),done=S.done[d]||{};return{sch:ms.length,ok:ms.filter(m=>done[m.id]).length}}
+function vProgreso(){const win=view.win||7,t=today();let sch=0,ok=0,rows="";
+ for(let i=0;i<win;i++){const d=addDays(t,-i);if(d<S.created)break;const s=dayStats(d);sch+=s.sch;ok+=s.ok;if(i<14)rows+=`<tr><td>${fmtDate(d)}</td><td>${s.ok}/${s.sch}</td><td>${s.sch?Math.round(s.ok/s.sch*100)+"%":"—"}</td></tr>`}
+ const end=pdate(t),startCol=new Date(end);startCol.setDate(end.getDate()-end.getDay()-7*11);let cal="";
+ for(let w=0;w<12;w++){cal+=`<div class="col">`;for(let k=0;k<7;k++){const dd=new Date(startCol);dd.setDate(startCol.getDate()+w*7+k);const d=dstr(dd);let c="";if(d>t)c="fut";else if(d<S.created)c="pre";else{const s=dayStats(d),p=s.sch?s.ok/s.sch:0;c=p>=.99?"l3":p>=.5?"l2":p>0?"l1":""}cal+=`<i class="${c}" title="${fmtDate(d)}${c==="pre"?" · antes de empezar":""}"></i>`}cal+=`</div>`}
+ return`<div><h1>Progreso.</h1><p class="mute">Cumplimiento desde que empezaste (${fmtDate(S.created)}). Los días anteriores no cuentan.</p></div>
+ <div class="row">${[7,30,90].map(n=>`<button class="btn" data-act="win" data-k="${n}" style="${win===n?"border-color:var(--accent);color:var(--accent)":""}">${n} días</button>`).join("")}</div>
+ <div class="grid2"><div class="card"><div class="stat"><b>${sch?Math.round(ok/sch*100):0}%</b><span>cumplimiento en ${win} días (${ok} de ${sch} misiones)</span></div><div class="bar"><i style="width:${sch?ok/sch*100:0}%"></i></div></div><div class="card"><div class="row"><div class="stat" style="flex:1"><b>${streak()}</b><span>días seguidos</span></div><div class="stat" style="flex:1"><b>${totalXP()}</b><span>XP totales</span></div></div></div></div>
+ <div class="card"><h3>Últimas 12 semanas</h3><div class="cal">${cal}</div><div class="row small mute"><span>Casilla punteada: antes de empezar.</span><span>Más intenso: más misiones cumplidas.</span></div></div>
+ <div class="card"><h3>Detalle diario</h3><div class="scroll"><table><tr><th>Fecha</th><th>Cumplidas</th><th>%</th></tr>${rows||`<tr><td colspan="3">Sin días registrados todavía.</td></tr>`}</table></div></div>`}
+function vBitacora(){return`${memberBanner()}<div><h1>Bitácora.</h1><p class="mute">Anota cómo te fue. Solo tú ves estas notas.</p></div><form class="card" id="jForm"><label>¿Cómo estuvo tu día?<textarea id="jText" maxlength="1000"></textarea></label><div class="row"><button class="btn pri" type="submit">Guardar nota</button></div></form>
+ ${S.journal.length?S.journal.map(j=>`<div class="card"><div class="row sp"><span class="mute small">${fmtDT(j.at)}</span><button class="link" data-act="delNote" data-id="${j.id}">Borrar</button></div><p style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(j.text)}</p></div>`).join(""):`<p class="mute">Todavía no hay notas.</p>`}`}
+function vPlanes(){const st=memberState(),m={trialStart:M&&M.trial_used},money="$"+CFG.price.toLocaleString("es-CL"),cls={ACTIVO:"ok",VENCIDO:"warn",SUSPENDIDO:"bad"}[st.status]||"";
+ return`<div><h1>Tu acceso a ${esc(CFG.name)}.</h1></div>
+ <div class="card"><div class="row sp"><h3>Mi membresía</h3><span class="pill ${cls}">${st.status}</span></div><div class="grid2"><div class="stat"><b>${st.active?st.days:0}</b><span>días restantes${st.kind?" · "+st.kind:""}</span></div><div><div class="mute small">${st.active?"Activo hasta":"Venció"}</div><b>${st.exp?fmtDT(st.exp):"—"}</b></div></div>${st.status==="VENCIDO"?`<div class="banner warn">Tu membresía terminó, pero tu progreso está guardado.</div>`:""}</div>
+ <div class="card"><h3>${CFG.trialDays} días gratis · luego ${money} CLP por ${CFG.periodDays} días</h3><p class="mute">Una sola prueba por cuenta, sin tarjeta ni cobros automáticos. Incluye hábitos ilimitados, las seis etapas del plan y estadísticas completas.</p>
+ <div class="row"><button class="btn pri" data-act="trial" ${m.trialStart?"disabled":""}>${m.trialStart?"Prueba ya utilizada":"Comenzar mis "+CFG.trialDays+" días gratis"}</button><a class="btn pri" target="_blank" rel="noopener" href="${CFG.payUrl}">Pagar ${money} · ${CFG.periodDays} días</a></div>
+ <p class="mute small">Al pagar, guarda el número de operación y envíalo al administrador junto con tu cuenta. El administrador comprueba el abono en Mercado Pago y activa los ${CFG.periodDays} días. Abrir el enlace no activa el acceso. Si renuevas antes de vencer, los días se suman al final de tu acceso vigente.</p></div>
+ ${M&&M.is_admin?`<div class="card" style="border-color:var(--cool)"><div class="row sp"><h3>Administración</h3><span class="pill">Solo tú ves esto</span></div><p class="mute small">Registra un pago ya comprobado en Mercado Pago. El cliente debe haber creado su cuenta con ese correo. Un mismo número de operación no suma días dos veces.</p>
+ <form id="grantForm" class="stack"><div class="grid2"><input id="grantEmail" type="email" placeholder="Correo del cliente" required><input id="grantRef" placeholder="Número de operación" required maxlength="40"></div><div class="row"><button class="btn pri" type="submit">Activar ${CFG.periodDays} días</button><button class="btn" type="button" data-act="adminReload">Actualizar lista</button></div></form>
+ <div class="scroll"><table><tr><th>Cuenta</th><th>Estado</th><th>Vence</th><th>Último pago</th><th></th></tr>${ADM?ADM.list.map(u=>`<tr><td>${esc(u.email)}</td><td>${esc(u.status)}</td><td>${u.expires_at?fmtDT(Date.parse(u.expires_at)):"—"}</td><td>${esc(u.last_ref||"—")}</td><td><button class="link" data-act="adminSuspend" data-email="${esc(u.email)}" data-v="${u.suspended?0:1}">${u.suspended?"Reactivar":"Suspender"}</button></td></tr>`).join("")||`<tr><td colspan="5">Sin cuentas todavía.</td></tr>`:`<tr><td colspan="5">Cargando…</td></tr>`}</table></div><p class="mute small">Reactivar levanta la suspensión y no agrega días.</p>
+ <details><summary>Auditoría (${ADM?ADM.audit.length:0})</summary><div class="scroll"><table><tr><th>Fecha</th><th>Cuenta</th><th>Acción</th><th>Detalle</th></tr>${ADM&&ADM.audit.length?ADM.audit.map(a=>`<tr><td>${fmtDT(Date.parse(a.at))}</td><td>${esc(a.target||"")}</td><td>${esc(a.action)}</td><td>${esc(a.detail||"")}</td></tr>`).join(""):`<tr><td colspan="4">Sin movimientos.</td></tr>`}</table></div></details></div>`:""}
+ <div class="card"><h3>Tus datos</h3><p class="mute">Tu progreso se conserva al vencer. Descargar y borrar tus datos siempre es gratis, desde Ajustes.</p></div>`}
+function vAjustes(){return`<div><h1>Ajustes.</h1></div>
+ <form class="card" id="profForm"><h3>Tu nombre</h3><label>¿Cómo quieres que te llamemos?<input id="pName" maxlength="30" value="${esc(S.profile.name)}"></label><div class="row"><button class="btn pri" type="submit">Guardar perfil</button></div></form>
+ <div class="card"><h3>Privacidad y autorizaciones</h3><p>Autorización de datos de salud: <b>${S.onboard.health?"Activa":"No otorgada"}</b>. Versión ${esc(S.onboard.version)} · aceptado el ${fmtDT(S.onboard.at)}.</p>
+ ${S.onboard.health?(view.confirm==="health"?`<div class="banner bad">Esto borra tu cuestionario, tu plan y todos los registros de esfuerzo, dolor y síntomas. No se puede deshacer. <div class="row" style="margin-top:8px"><button class="btn danger" data-act="withdrawHealth">Sí, retirar y borrar</button><button class="btn" data-act="noConfirm">Cancelar</button></div></div>`:`<div class="row"><button class="btn" data-act="askConfirm" data-k="health">Retirar autorización de datos de salud</button></div>`):`<div class="row"><button class="btn" data-act="giveHealth">Autorizar datos de salud</button></div>`}
+ <div class="row"><button class="btn" data-act="export">Descargar todos mis datos · Gratis</button></div>${view.exportTxt?`<textarea readonly id="exportTxt">${esc(view.exportTxt)}</textarea><p class="mute small">Copia este texto y guárdalo en un archivo.</p>`:""}
+ ${view.confirm==="all"?`<div class="banner bad">Esto borra tus misiones, tu progreso, tu bitácora y tu plan. No se puede deshacer. <div class="row" style="margin-top:8px"><button class="btn danger" data-act="deleteAll">Sí, borrar todo</button><button class="btn" data-act="noConfirm">Cancelar</button></div></div>`:`<div class="row"><button class="btn danger" data-act="askConfirm" data-k="all">Borrar mis datos · Gratis</button></div>`}</div>
+ <div class="card"><h3>Dónde se guarda tu progreso</h3><p class="mute">En tu cuenta (${esc(session.user.email)}): puedes entrar desde otro dispositivo con el mismo correo y continuar.</p>${view.pass?`<form id="chPassForm" class="stack"><label>Contraseña nueva (mínimo 8 caracteres)<input id="cpPass" type="password" autocomplete="new-password" minlength="8" required></label><label>Repítela<input id="cpPass2" type="password" autocomplete="new-password" minlength="8" required></label><div class="row"><button class="btn pri" type="submit">Guardar contraseña</button><button class="btn" type="button" data-act="passClose">Cancelar</button></div></form>`:""}<div class="row">${view.pass?"":`<button class="btn" data-act="passOpen">Cambiar contraseña</button>`}<button class="btn" data-act="logout">Cerrar sesión</button></div><p class="mute small">Los avisos suenan con la app abierta. Para recordatorios con la app cerrada usa el enlace Recordatorio de cada misión, que crea el evento en Google Calendar.</p></div>`}
+
+/* ===== Acciones ===== */
+const A={
+ tab(e){tab=e.dataset.k;view={};render();window.scrollTo(0,0);if(tab==="planes"){refreshMember().then(()=>loadAdmin()).then(()=>{if(tab==="planes")render()})}},
+ authMode(){authMode=authMode==="up"?"in":"up";authMsg="";render()},
+ authReset(){authMode="reset";authMsg="";render()},
+ authBack(){authMode="in";authMsg="";render()},
+ passOpen(){view.pass=true;render()}, passClose(){view.pass=false;render()},
+ async logout(){clearTimeout(saveT);await flush();await sb.auth.signOut()},
+ async adminReload(){await loadAdmin();render()},
+ async adminSuspend(e){const{data}=await sb.rpc("admin_set_suspended",{p_email:e.dataset.email,p_value:e.dataset.v==="1"});if(data&&data.ok===false)toast(data.msg);await loadAdmin();await refreshMember();render()},
+ legal(e){view.legal=e.dataset.k;render();window.scrollTo(0,0)}, closeLegal(){view.legal=null;render()},
+ onboard(){if(!$("#ob18").checked||!$("#obTerms").checked)return toast("Confirma tu edad y acepta los términos para entrar.");S.profile.name=$("#obName").value.trim()||"Guerrero";S.onboard={at:Date.now(),version:CFG.consentVersion,health:$("#obHealth").checked,healthAt:$("#obHealth").checked?Date.now():null};S.created=today();save();render()},
+ newMission(){view.form={xp:20,cat:"Cuerpo"};render()}, cancelForm(){view.form=null;render()},
+ editMission(e){const m=S.missions.find(x=>x.id===e.dataset.id);view.form=Object.assign({},m);render()},
+ archive(e){const m=S.missions.find(x=>x.id===e.dataset.id);m.archived=today();view.form=null;save();render();toast("Misión archivada. Tus logros se conservan.")},
+ toggle(e){const d=today(),id=e.dataset.id;if(!canRecord())return;S.done[d]=S.done[d]||{};if(S.done[d][id]){delete S.done[d][id];save();render();return}const m=S.missions.find(x=>x.id===id),before=stageIdx(totalXP());S.done[d][id]=m.xp;save();render();const after=stageIdx(totalXP());toast(after>before?"Nueva etapa: "+ROUTES[S.profile.route].names[after]:"+"+m.xp+" XP")},
+ startTimer(e){const m=S.missions.find(x=>x.id===e.dataset.id);S.timer={mid:m.id,dur:m.dur,acc:0,since:Date.now(),run:true,rang:false};save();render()},
+ timerToggle(){const t=S.timer;if(t.rang)return;if(t.run){t.acc=timerElapsed();t.run=false}else{t.since=Date.now();t.run=true}save();render()},
+ timerStop(){S.timer=null;save();render()},
+ toggleCatalog(){view.catalog=!view.catalog;render()}, cat(e){view.cat=e.dataset.k;render()},
+ addCat(e){const c=CATALOG[+e.dataset.i];S.missions.push({id:uid(),name:c[0],cat:c[1],xp:c[2],time:c[3],dur:0,days:[0,1,2,3,4,5,6],created:today()});save();render();toast("Hábito agregado")},
+ giveHealth(){S.onboard.health=true;S.onboard.healthAt=Date.now();S.onboard.version=CFG.consentVersion;save();render()},
+ clearPro(){if(!$("#clearChk").checked)return toast("Marca la casilla si un profesional te autorizó.");S.train.cleared=today();save();render()},
+ redoParq(){S.train.parq=null;S.train.cleared=null;save();render()},
+ resetPlan(){S.train.plan=null;save();render()},
+ openLog(){if(!canRecord())return;view.log={result:"completa",borg:5,pain:0};render()}, closeLog(){view.log=null;render()},
+ scale(e){view.log[e.dataset.s]=+e.dataset.v;const f=$("#logForm");view.log.result=f.res.value;view.log.alert=$("#logAlert").checked;view.log.note=$("#logNote").value;render()},
+ stageUp(){if(progression().state!=="advance")return;S.train.stage++;save();render();toast("Avanzaste a la etapa "+S.train.stage)},
+ stageDown(){if(S.train.stage>1)S.train.stage--;save();render();toast("Quedaste en la etapa "+S.train.stage)},
+ async copyKine(){const t=$("#kineTxt");try{await navigator.clipboard.writeText(t.value);toast("Resumen copiado")}catch(e){t.select();toast("Selecciona y copia el texto")}},
+ win(e){view.win=+e.dataset.k;render()},
+ delNote(e){S.journal=S.journal.filter(j=>j.id!==e.dataset.id);save();render()},
+ async trial(){if(M&&M.trial_used)return;const{data,error}=await sb.rpc("start_trial");if(error)return toast("No se pudo iniciar la prueba. Revisa tu conexión.");M=data;skew=Date.parse(data.server_now)-Date.now();render();toast("Tus "+CFG.trialDays+" días gratis comenzaron")},
+ askConfirm(e){view.confirm=e.dataset.k;render()}, noConfirm(){view.confirm=null;render()},
+ withdrawHealth(){S.onboard.health=false;S.onboard.healthAt=null;S.train=blank().train;view={};save();render();toast("Autorización retirada y datos de salud borrados")},
+ export(){const txt=JSON.stringify(S,null,2);try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download="ascenso-mis-datos.json";document.body.append(a);a.click();a.remove();toast("Datos descargados")}catch(e){view.exportTxt=txt;render()}},
+ async deleteAll(){S=blank();view={};try{localStorage.removeItem(LS)}catch(e){}save();render();toast("Tus datos fueron borrados")},
+};
+document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(!el)return;const f=A[el.dataset.act];if(f){if(el.tagName==="BUTTON"&&el.type!=="submit")e.preventDefault();f(el)}});
+document.addEventListener("change",e=>{if(e.target.id==="routeSel"){S.profile.route=e.target.value;save();render()}});
+document.addEventListener("submit",e=>{e.preventDefault();const id=e.target.id;
+ if(id==="authForm"){doAuth();return}
+ if(id==="newPassForm"||id==="chPassForm"){const a=$(id==="newPassForm"?"#npPass":"#cpPass").value,b2=$(id==="newPassForm"?"#npPass2":"#cpPass2").value;if(a.length<8){authMsg="!La contraseña debe tener al menos 8 caracteres.";if(id==="chPassForm")toast(authMsg.slice(1));else render();return}if(a!==b2){authMsg="!Las dos contraseñas no coinciden.";if(id==="chPassForm")toast(authMsg.slice(1));else render();return}sb.auth.updateUser({password:a}).then(({error})=>{if(error){authMsg="!No se pudo guardar la contraseña. Intenta de nuevo.";if(id==="chPassForm")toast(authMsg.slice(1));else render();return}authMsg="";if(recovering){recovering=false;afterAuth()}else{view.pass=false;render()}toast("Contraseña actualizada")});return}
+ if(id==="mForm"){const days=[...document.querySelectorAll(".mDay:checked")].map(x=>+x.value);if(!days.length)return toast("Elige al menos un día.");const o={name:$("#mName").value.trim(),cat:$("#mCat").value,xp:+$("#mXp").value,time:$("#mTime").value,dur:+$("#mDur").value||0,days};if(!o.name)return;if(view.form.id)Object.assign(S.missions.find(x=>x.id===view.form.id),o);else S.missions.push(Object.assign({id:uid(),created:today()},o));view.form=null;save();render();toast("Misión guardada")}
+ else if(id==="parqForm"){S.train.parq=PARQ.map((_,i)=>e.target["q"+i].value==="1");S.train.cleared=null;save();render()}
+ else if(id==="planForm"){S.train.plan={days:$("#pDays").value,walk:+$("#pWalk").value,since:today()};save();render();toast("Plan activado")}
+ else if(id==="logForm"){const tt=todayTrain(),res=e.target.res.value,l=view.log,s={id:uid(),date:today(),type:tt,stage:S.train.stage,result:res,borg:l.borg,pain:l.pain,alert:$("#logAlert").checked,note:$("#logNote").value.trim(),xp:res==="completa"?50:25};S.train.sessions.unshift(s);view.log=null;save();render();toast(s.alert||s.pain>=5?"Registro guardado. Revisa la alerta.":"+"+s.xp+" XP")}
+ else if(id==="jForm"){const t=$("#jText").value.trim();if(!t)return;if(!canRecord())return;S.journal.unshift({id:uid(),at:Date.now(),text:t});save();render();toast("Nota guardada")}
+ else if(id==="grantForm"){sb.rpc("admin_grant",{p_email:$("#grantEmail").value,p_ref:$("#grantRef").value}).then(async({data,error})=>{if(error)return toast("No se pudo registrar el pago.");if(!data.ok)return toast(data.msg);await loadAdmin();await refreshMember();render();toast(CFG.periodDays+" días activados")})}
+ else if(id==="profForm"){S.profile.name=$("#pName").value.trim()||"Guerrero";save();render();toast("Perfil guardado")}
+});
+setInterval(tickTimer,500);
+
+/* ===== Arranque: sesión, datos locales y luego la cuenta ===== */
+async function doAuth(){const email=$("#auEmail").value.trim(),password=($("#auPass")||{}).value;authMsg="";const btn=document.querySelector("#authForm button[type=submit]");btn.disabled=true;
+ try{if(authMode==="reset"){const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});authMsg=error?"!"+(/rate|limit/i.test(error.message)?"Se enviaron demasiados correos en poco tiempo. Intenta de nuevo en una hora.":"No se pudo enviar el enlace. Revisa el correo e intenta otra vez."):"Si existe una cuenta con ese correo, te llegará un enlace para elegir una contraseña nueva. Revisa también la carpeta de spam."}
+  else if(authMode==="up"){const{data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});if(error)authMsg="!"+(/registered|already/i.test(error.message)?"Ya existe una cuenta con ese correo. Entra con tu contraseña.":/password/i.test(error.message)?"La contraseña debe tener al menos 8 caracteres.":/rate|limit/i.test(error.message)?"Se enviaron demasiados correos en poco tiempo. Intenta de nuevo en una hora.":"No se pudo crear la cuenta. Revisa el correo e intenta otra vez.");else if(!data.session){authMode="in";authMsg="Te enviamos un correo para confirmar tu cuenta. Abre el enlace y luego entra aquí con tu contraseña."}}
+  else{const{error}=await sb.auth.signInWithPassword({email,password});if(error)authMsg="!"+(/confirm/i.test(error.message)?"Falta confirmar tu correo. Abre el enlace que te enviamos.":/invalid/i.test(error.message)?"Correo o contraseña incorrectos.":"No se pudo entrar. Revisa tu conexión.")}}
+ catch(e){authMsg="!No se pudo conectar. Revisa tu conexión."}
+ if(!session||authMode==="reset")render()}
+async function afterAuth(){if(!session){S=blank();M=null;ADM=null;tab="dia";view={};render();return}
+ LS="ascenso."+session.user.id;S=blank();loadLocal();render();await refreshMember();await pull(false);render()}
+sb.auth.onAuthStateChange((_e,s2)=>{if(_e==="PASSWORD_RECOVERY"){recovering=true;session=s2;authMsg="";render();return}const was=session&&session.user.id,now=s2&&s2.user.id;session=s2;if(was!==now)setTimeout(afterAuth,0)});
+sb.auth.getSession().then(({data})=>{session=data.session;afterAuth()});
+setInterval(()=>{if(session&&document.visibilityState==="visible")refreshMember()},300000);
+window.addEventListener("online",()=>{if(dirty)flush()});
+</script>
+</body>
+</html>
