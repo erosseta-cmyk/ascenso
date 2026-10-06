@@ -366,5 +366,27 @@ sb.auth.getSession().then(({data})=>{session=data.session;afterAuth()});
 setInterval(()=>{if(session&&document.visibilityState==="visible")refreshMember()},300000);
 window.addEventListener("online",()=>{if(dirty)flush()});
 </script>
-</body>
+<script>
+(function(){
+ if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(function(){})}
+ var standalone=window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true;
+ var mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+ var fromMail=/access_token|type=|error=|code=/.test(location.hash+location.search);
+ var skip=false;try{skip=sessionStorage.getItem("ascenso.web")==="1"}catch(e){}
+ if(standalone||!mobile||fromMail||skip)return;
+ var ios=/iPhone|iPad|iPod/i.test(navigator.userAgent),dp=null;
+ var o=document.createElement("div");o.id="installGate";
+ o.style.cssText="position:fixed;inset:0;z-index:99999;background:#0b0f17;color:#e8ecf4;display:flex;align-items:center;justify-content:center;padding:24px;font-family:inherit";
+ o.innerHTML='<div style="max-width:420px;text-align:center"><img src="icon-192.png" alt="" width="96" height="96" style="border-radius:22px"><h1 style="margin:18px 0 8px;font-size:28px">Instala Ascenso</h1><p style="opacity:.8;line-height:1.5;margin:0 0 20px">Ascenso funciona como aplicación en tu teléfono. Instálala y ábrela desde tu pantalla de inicio.</p><div id="igSteps" style="text-align:left;background:#141a26;border:1px solid #232b3b;border-radius:14px;padding:16px;line-height:1.6;font-size:16px"></div><button id="igBtn" style="display:none;margin-top:18px;width:100%;padding:16px;border:0;border-radius:12px;background:#ff9a3c;color:#16110a;font-size:18px;font-weight:700">Instalar aplicación</button><p style="margin-top:22px"><a href="#" id="igSkip" style="color:#9aa6bd;font-size:14px">Continuar sin instalar</a></p></div>';
+ function mount(){document.body.appendChild(o);
+  var st=o.querySelector("#igSteps"),bt=o.querySelector("#igBtn");
+  st.innerHTML=ios?'<b>En iPhone (Safari):</b><br>1. Toca el botón Compartir (cuadrado con flecha).<br>2. Elige «Agregar a inicio».<br>3. Abre Ascenso desde el ícono nuevo.':'<b>En Android (Chrome):</b><br>1. Toca «Instalar aplicación» aquí abajo.<br>2. Si no aparece, abre el menú ⋮ y elige «Instalar aplicación» o «Agregar a pantalla principal».<br>3. Abre Ascenso desde el ícono nuevo.';
+  if(dp)bt.style.display="block";
+  bt.onclick=function(){if(!dp)return;dp.prompt();dp.userChoice.then(function(){dp=null;bt.style.display="none"})};
+  o.querySelector("#igSkip").onclick=function(e){e.preventDefault();try{sessionStorage.setItem("ascenso.web","1")}catch(x){}o.remove()};}
+ window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;var b=document.getElementById("igBtn");if(b)b.style.display="block"});
+ window.addEventListener("appinstalled",function(){var s=document.getElementById("igSteps");if(s)s.innerHTML="<b>Listo.</b> Abre Ascenso desde el ícono en tu pantalla de inicio."});
+ if(document.body)mount();else document.addEventListener("DOMContentLoaded",mount);
+})();
+</script></body>
 </html>
