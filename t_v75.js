@@ -1,0 +1,13 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8978);let {b,p,errs}=await open(8978,{email:'ana@x.cl',state:J(F.B)});
+const r=await p.evaluate(()=>{const o={};const go=()=>{view.evo=null;S.seenStage=99;tab='dia';render();return document.querySelector('#main').innerText};
+ S.done={};S.rxDone={};S.train.hold=null;S.train.sessions=[{id:'a',date:addDays(today(),-5),type:'fuerza',result:'completa',borg:3,pain:7}];let m=go();
+ o.d5=/Han pasado 5 días desde tu último registro/.test(m)&&/Registrar una actividad/.test(m);o.d5pain=/registraste dolor/.test(m);o.lbl=/Ánimo del personaje:/.test(m);
+ o.noBlame=!/te extraña|no se mueve|Hacer algo hoy/.test(m);
+ S.train.sessions=[{id:'b',date:addDays(today(),-9),type:'fuerza',result:'completa',borg:3,pain:1,alert:true}];m=go();
+ o.alert=/¿Cómo te has sentido estos días\?/.test(m)&&!/registraste dolor/.test(m);
+ S.train.sessions=[{id:'c',date:addDays(today(),-9),type:'fuerza',result:'completa',borg:3,pain:7,paused:'dolor'}];S.train.hold={at:addDays(today(),-9),sid:'c',kind:'dolor'};m=go();
+ o.pause=/Tu pauta está en pausa\. Tu progreso está guardado\./.test(m)&&!/Registrar una actividad/.test(m);return o});
+ok('4-6 días: texto neutro con botón «Registrar una actividad»',r.d5,r);ok('4-6 días no pregunta por dolor',!r.d5pain);ok('etiqueta «Ánimo del personaje»',r.lbl);ok('sin textos de culpa',r.noBlame);
+ok('alerta sin dolor: pregunta cómo se ha sentido',r.alert);ok('en pausa: sin llamado a actuar',r.pause,r);
+ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();

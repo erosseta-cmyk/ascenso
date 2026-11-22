@@ -1,0 +1,28 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:400,height:850},offline:true,permissions:['clipboard-read','clipboard-write']});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///mnt/user-data/outputs/Ascenso_validar_buscador.html');await p.waitForTimeout(800);
+const q=async t=>{await p.fill('#q',t);await p.waitForTimeout(80);return p.evaluate(()=>{const b=document.querySelector('#res p b');const ch=[...document.querySelectorAll('#res button[data-pick]')].map(x=>x.textContent);return (b?b.textContent:'(nada)')+(ch.length?' '+ch.join(' | '):'')})};
+const cases=['cervicobraquialgia','cervicobraquealgia','CBA','hernia cervical','PTC','protesis cadera','esguince tobillo','lumbociatica','ciática','manguito','tendinitis supraespinoso','codo de tenista','fascitis','LCA','vppb','vertigo','caidas','parkinson','acv','epoc','rodilla','dolor de rodilla','artrosis rodilla','tunel carpiano','lumbago','condromalasia','aquiles insercional','hombro congelado','fractura cadera','xyz'];
+for(const t of cases)console.log(t.padEnd(26),'→',await q(t));
+await q('rodilla');await p.click('#res button[data-pick="gonartrosis"]');console.log('elegido',await p.textContent('#res p b'));
+await q('cervicobraquialgia');
+const g=await p.$$eval('#res .grp',a=>a.map(x=>x.textContent));console.log('grupos',g);
+await p.click('#stg button[data-s="a"]');console.log('irritable',await p.$$eval('#res .grp',a=>a.map(x=>x.textContent)));
+// validar: abrir cervicobraquialgia, quitar tor_libro? (está en p) cambiar a quitar, agregar ab_pallof, validar
+await p.click('details.dx[data-id="cervicobraquialgia"]>summary');
+await p.selectOption('details.dx[data-id="cervicobraquialgia"] select[data-f="tor_libro"]','x');
+await p.selectOption('details.dx[data-id="cervicobraquialgia"] select[data-add]','ab_pallof');
+await p.click('details.dx[data-id="cervicobraquialgia"] button[data-dec="ok"]');
+await p.fill('details.dx[data-id="cervicobraquialgia"] textarea[data-k="note"]','prueba nota');
+await p.click('details.dx[data-id="lumbago_agudo"]>summary');await p.click('details.dx[data-id="lumbago_agudo"] button[data-dec="no"]');
+await p.fill('#firma','Prueba');await p.check('#conf');
+console.log('stats',await p.textContent('#cnt'),'|',await p.textContent('#cnt2'));
+await p.reload();await p.waitForTimeout(500);console.log('tras recargar',await p.textContent('#cnt2'),await p.inputValue('#firma'));
+await p.click('#copy');await p.waitForTimeout(200);const clip=await p.evaluate(()=>navigator.clipboard.readText());console.log(clip.split('\n').slice(0,8).join('\n'));
+const [dl]=await Promise.all([p.waitForEvent('download'),p.click('#save')]);const path=await dl.path();
+const p2=await (await b.newContext({offline:true})).newPage();p2.on('pageerror',e=>errs.push('p2 '+e.message));require('fs').copyFileSync(path,'/tmp/copia.html');await p2.goto('file:///tmp/copia.html');await p2.waitForTimeout(500);
+const sz=require('fs').statSync('/tmp/copia.html').size;console.log('copia guardada KB',sz>>10,await p2.textContent('#cnt2'));
+const imgs=await p.$$eval('img',a=>({n:a.length,broken:a.filter(i=>i.complete&&!i.naturalWidth&&!i.loading).length}));console.log('imgs',imgs);
+await p.click('#flt button[data-f="m"]');console.log('filtro cambios',await p.$$eval('details.dx',a=>a.map(x=>x.dataset.id)));
+await p.screenshot({path:'/home/claude/qa/buscador.png',fullPage:false});
+console.log('errores',errs);await b.close()})();

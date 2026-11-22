@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');const fs=require('fs');
+(async()=>{const b=await chromium.launch();const c=await b.newContext({acceptDownloads:true});const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('file:///mnt/user-data/outputs/Ascenso_firma_fichas.html');await p.waitForTimeout(500);
+console.log('cards',await p.$$eval('.card[id^=c_]',x=>x.length),'fx',await p.textContent('#nFx'),'obs',await p.textContent('#nObs'),'ok',await p.textContent('#nOk'));
+await p.click('#allok');console.log('done',await p.textContent('#nDone'));
+await p.check('input[name="d_ves_seguimiento"][value="firmar"]');await p.check('input[name="d_ab_crunch"][value="no"]');await p.fill('textarea[data-id="ab_crunch"]','rehacer; nota con ; y </script>');
+await p.fill('#sn','Klgo. Esteban Rosset');await p.check('#sc');
+const [d]=await Promise.all([p.waitForEvent('download'),p.click('#save')]);const f='/tmp/resp.html';await d.saveAs(f);
+const p2=await c.newPage();p2.on('pageerror',e=>errs.push('p2:'+e.message));await p2.goto('file://'+f);await p2.waitForTimeout(500);
+console.log('reloaded done',await p2.textContent('#nDone'),'crunch',await p2.$eval('input[name="d_ab_crunch"][value="no"]',x=>x.checked),'note',await p2.$eval('textarea[data-id="ab_crunch"]',x=>x.value),'name',await p2.$eval('#sn',x=>x.value),'cards',await p2.$$eval('.card[id^=c_]',x=>x.length));
+console.log('errs',errs);await p.setViewportSize({width:420,height:900});await p.screenshot({path:'/tmp/firma.png'});await b.close()})();

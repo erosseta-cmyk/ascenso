@@ -1,0 +1,6 @@
+const {serve,open}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8992);for(const big of [false,true]){const st=J(F.B);st.ui.simpleAsked=1;st.ui.kineAsked=1;st.ui.big=big;st.train.senior=true;
+const {b,p}=await open(8992,{email:"t@x.cl",state:st});await p.evaluate(()=>{const t=S.train;t.sessions=t.sessions.filter(x=>x.date!==today());t.hold=null;view.evo=null;S.seenStage=99;tab='entreno';view.log={result:"",borg:null,pain:null};render()});
+const pos=async()=>p.evaluate(()=>{const r=e=>{const b=e.getBoundingClientRect();return [Math.round(b.top+scrollY),Math.round(b.height)]};return{p1:r(document.querySelector('[data-act=scale][data-s=pain][data-v="1"]')),b1:r(document.querySelector('[data-act=scale][data-s=borg][data-v="1"]')),nw:r(document.querySelector('#logNew').closest('label')),al:r(document.querySelector('#logAlert').closest('label')),sy:scrollY}});
+const a=await pos();await p.evaluate(()=>document.querySelector('[data-act=scale][data-s=borg][data-v="1"]').click());const m=await pos();await p.evaluate(()=>document.querySelector('[data-act=scale][data-s=pain][data-v="1"]').click());const c=await pos();
+console.log('big',big,JSON.stringify({antes:a,trasBorg:m,trasDolor:c}));await b.close()}srv.close()})();

@@ -1,0 +1,8 @@
+const {serve}=require('./lib');const {chromium}=require('playwright');const F=require('./fixtures');
+const P='"><img src=x onerror="window.__xss=(window.__xss||0)+1">';
+(async()=>{const srv=await serve(8993);const b=await chromium.launch();
+ for(const field of ['email','status','last_ref','ext_days','phone','wa_last','expires_at','audit','fb']){
+ const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.addInitScript(({st})=>{localStorage.clear();localStorage.setItem('stub.email','kine@x.cl');localStorage.setItem('stub.state.kine@x.cl',JSON.stringify({data:st,rev:5}))},{st:F.B});const p=await ctx.newPage();let perr=null;p.on('pageerror',e=>perr=e.message);await p.goto('http://localhost:8993/');await p.waitForTimeout(700);
+ await p.evaluate(([P,field])=>{const u={email:"a@x.cl",status:"VENCIDO",expires_at:new Date().toISOString(),last_ref:"r",ext_days:3,phone:"+56911111111",wa_ok:true,wa_last:new Date().toISOString()};if(field in u)u[field]=P;ADM={list:[u],audit:[{at:new Date().toISOString(),target:field==='audit'?P:"t",action:field==='audit'?P:"a",detail:field==='audit'?P:"d"}],fb:[{at:new Date().toISOString(),email:field==='fb'?P:"e",kind:field==='fb'?P:"d7",text:field==='fb'?P:"t",body:field==='fb'?P:"t",msg:field==='fb'?P:"t",score:field==='fb'?P:5,nps:field==='fb'?P:5}]};tab='planes';view.evo=null;S.seenStage=99;render()},[P,field]).catch(e=>perr=e.message);
+ await p.waitForTimeout(300);const n=await p.evaluate(()=>window.__xss||0);const shown=await p.evaluate(()=>!!document.querySelector('.admu'));console.log('admin',field,'xss='+n,'render='+shown,perr?('err '+perr.slice(0,60)):'');await ctx.close()}
+ await b.close();srv.close()})();

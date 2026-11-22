@@ -1,0 +1,18 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8974);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+const base=(id,s)=>({id,email:'p'+id+'@x.cl',name:'P'+id,since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:s,done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]});
+const res=base(1,[{id:'a',date:d(3),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas',resumedAt:Date.now()-864e5,liftBy:'kine'},{id:'b',date:d(1),type:'caminata',result:'completa',borg:3,pain:0}]);
+const self=base(2,[{id:'c',date:d(3),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas',resumedAt:Date.now()-864e5}]);
+const open1=base(3,[{id:'d',date:d(2),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas'}]);
+const two=base(4,[{id:'e',date:d(1),type:'fuerza',result:'completa',borg:3,pain:6,paused:'dolor'},{id:'f',date:d(5),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas',resumedAt:Date.now()-3*864e5,liftBy:'kine'}]);
+let {b,p,errs}=await open(8974,{email:"kine@x.cl",state:J(F.B),pro:[res,self,open1,two]});
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render()});await p.waitForTimeout(500);
+const r=await p.evaluate(()=>SH.pro.map(x=>{const k=ptStats(x);const c=[...document.querySelectorAll('#main .card')].find(e=>e.querySelector('h3')&&e.querySelector('h3').textContent===x.name);return{n:x.name,warn:k.warn,openA:k.openA,alerts:k.alerts,revisar:/Revisar/.test(c.textContent),bad:!!c.querySelector('.banner.bad'),resuelto:/Resuelto por ti/.test(c.textContent),cnt:(c.textContent.match(/con aviso \([^)]*\)([^·]*)/)||[])[1]}}));
+const g=n=>r.find(x=>x.n===n);
+ok('alerta levantada por el kine: sin «Revisar»',!g('P1').revisar&&!g('P1').warn,g('P1'));
+ok('… banner neutro «Resuelto por ti»',g('P1').resuelto&&!g('P1').bad,g('P1'));
+ok('… el conteo histórico se mantiene y dice resuelta',g('P1').alerts===1&&/1 resuelta por ti/.test(g('P1').cnt),g('P1'));
+ok('paciente reanudó solo: sigue «Revisar» y rojo',g('P2').revisar&&g('P2').bad&&!g('P2').resuelto,g('P2'));
+ok('alerta abierta: «Revisar» y rojo',g('P3').revisar&&g('P3').bad,g('P3'));
+ok('si hay una abierta y otra resuelta, muestra la abierta',g('P4').revisar&&g('P4').bad&&!g('P4').resuelto,g('P4'));
+ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();

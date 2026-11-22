@@ -1,0 +1,37 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');
+const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8981);
+const st=J(F.B);st.profile.ageR="75+";st.missions.push({id:"mz",name:"Tomar agua",cat:"salud",xp:5,time:"",dur:0,days:[0,1,2,3,4,5,6],created:"2026-10-01"});delete (st.ui||{}).simpleAsked;
+const rx=[{ex:"hom_re_toalla",name:"",dose:"2×10 por lado",note:"Lento"},{ex:"mmii_puente_cama",name:"",dose:"2×10",note:""},{ex:"fz_silla",name:"",dose:"2×8",note:""}];
+let {b,p,errs}=await open(8981,{email:"r@x.cl",state:st,mine:[{email:"kine@recupera.cl",since:"2026-10-01",rx,rxAt:"2026-11-08",id:7,clear:[]}]});
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;render()});let t=await p.innerText('#main');
+ok('ofrece modo simple al tener edad',t.includes('¿Quieres usar el modo simple?'),t.slice(0,300));
+await p.evaluate(()=>A.simpleNo());t=await p.innerText('#main');ok('tras decir no, queda el botón',t.includes('Modo simple: toca aquí'));
+await p.evaluate(()=>A.simpleOn());t=await p.innerText('#main');
+ok('modo simple: sin pestañas',await p.evaluate(()=>document.querySelector('#tabs').hidden));ok('letra grande activada',await p.evaluate(()=>document.documentElement.classList.contains('big')));
+ok('muestra ejercicios, plan, hábitos y sensaciones',['Ejercicios de tu kinesiólogo','Tus hábitos de hoy','¿Cómo te sentiste hoy?','Si te ayuda alguien'].every(x=>t.includes(x)),t.slice(0,800));
+ok('muestra tarjeta de avance (pedido 11-11)',/Tu avance/.test(t));
+await p.screenshot({path:'shots/v47_hoy.png',fullPage:true});
+await p.evaluate(()=>document.querySelector('.simple .btn.pri[data-act=sxGo]').click());t=await p.innerText('#main');ok('un ejercicio a la vez',t.includes('1 de 3')&&t.includes('Listo, lo hice'),t.slice(0,300));
+await p.screenshot({path:'shots/v47_ej.png',fullPage:true});
+await p.evaluate(()=>A.sxDone());t=await p.innerText('#main');ok('pregunta cómo le fue',t.includes('¿Cómo te fue?')&&t.includes('Me costó'));await p.screenshot({path:'shots/v47_fb.png'});
+await p.evaluate(()=>document.querySelector('[data-act=sxFb][data-v=costo]').click());t=await p.innerText('#main');ok('pasa solo al siguiente',t.includes('2 de 3'),t.slice(0,200));
+await p.evaluate(()=>A.sxDone());await p.evaluate(()=>document.querySelector('[data-act=sxFb][data-v=dolio]').click());t=await p.innerText('#main');ok('me dolió pide 0 a 10',t.includes('¿Cuánto te dolió?'));
+await p.evaluate(()=>document.querySelector('[data-act=sxScale][data-k=ex][data-v="6"]').click());t=await p.innerText('#main');ok('dolor ≥5: detenerse y avisar',t.includes('No sigas con este ejercicio')&&t.includes('Avisarle a mi kinesiólogo'));
+await p.evaluate(()=>A.sxNote());await p.waitForTimeout(500);const notes=await p.evaluate(()=>JSON.parse(localStorage.getItem('stub.mynotes.r@x.cl')||'[]'));ok('aviso enviado al kine',notes.length===1&&/Me dolió/.test(notes[0].body||notes[0].text||JSON.stringify(notes[0])),notes);
+t=await p.innerText('#main');ok('sigue al tercero',t.includes('3 de 3'),t.slice(0,200));
+await p.evaluate(()=>A.sxDone());await p.evaluate(()=>document.querySelector('[data-act=sxFb][data-v=facil]').click());t=await p.innerText('#main');ok('pantalla de terminado',t.includes('Terminaste tus ejercicios'));
+await p.evaluate(()=>A.sxHome());const fbd=await p.evaluate(()=>({rx:S.rxFb[today()],day:S.dayFb[today()],done:Object.keys(S.rxDone[today()]).length}));ok('registra todo',fbd.done===3&&fbd.day.pain===6&&Object.keys(fbd.rx).length===3,fbd);
+await p.evaluate(()=>document.querySelector('[data-act=sxScale][data-k=tired][data-v="4"]').click());ok('cansancio guardado',await p.evaluate(()=>S.dayFb[today()].tired===4));
+t=await p.innerText('#main');ok('aviso por dolor del día',t.includes('no sigas con ejercicios hoy'));
+const h=await p.evaluate(()=>dayMissions(today()).find(m=>!(S.done[today()]||{})[m.id]));if(h){await p.evaluate(id=>document.querySelector(`.simple [data-act=toggle][data-id="${id}"]`).click(),h.id);ok('marca un hábito',await p.evaluate(id=>!!(S.done[today()]||{})[id],h.id));await p.evaluate(id=>document.querySelector(`.simple [data-act=toggle][data-id="${id}"]`).click(),h.id);ok('un toque no desmarca el hábito',await p.evaluate(id=>!!(S.done[today()]||{})[id],h.id))}else ok('hay hábito pendiente',false)
+await p.screenshot({path:'shots/v47_hoy2.png',fullPage:true});
+await p.evaluate(()=>A.sxMore());t=await p.innerText('#main');ok('más opciones abre Ajustes con volver',t.includes('Volver al modo simple')&&t.includes('Ajustes'));
+await p.evaluate(()=>A.sxBack());await p.evaluate(()=>A.sxPlan());t=await p.innerText('#main');ok('plan Ascenso dentro del modo simple',t.includes('Volver a Hoy'));
+await p.evaluate(()=>A.sxHome());await p.reload();await p.waitForTimeout(1500);ok('se mantiene al recargar',await p.evaluate(()=>S.ui.simple&&document.querySelector('#tabs').hidden));
+await p.evaluate(()=>A.simpleOff());ok('salir vuelve a la vista completa',await p.evaluate(()=>!document.querySelector('#tabs').hidden));
+ok('sin errores',!errs.length,errs);await b.close();
+// pro ve sensaciones
+const d=new Date();const dd=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+({b,p,errs}=await open(8981,{email:"kine@x.cl",state:F.B,pro:[{id:7,email:"r@x.cl",name:"R",since:"2026-10-01",stage:1,parq:Array(10).fill(false),parqKey:"x",clear:[],rx,rxVersions:1,sessions:[],done:{},rxDone:{[dd]:{hom_re_toalla:Date.now()}},rxFb:{[dd]:{hom_re_toalla:{f:"dolio",p:6}}},dayFb:{[dd]:{tired:4,pain:6}},loads:{}}]}));
+await p.evaluate(()=>{tab='pacientes';view.evo=null;S.seenStage=99;render()});t=await p.innerText('#main');ok('pro ve cómo le fue',t.includes('le dolió 6/10')&&t.includes('cansancio 4/10, dolor 6/10'),t.slice(0,900));ok('pro sin errores',!errs.length,errs);await b.close();srv.close()})();

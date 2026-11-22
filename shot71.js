@@ -1,0 +1,9 @@
+const {serve,open}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const s=await serve(8973);const st=J(F.B);st.train.parq=Array(10).fill(false);st.train.parq[1]=true;st.train.parqAt=new Date().toISOString().slice(0,10);
+let {b,p}=await open(8973,{email:'ana@x.cl',state:st,mine:[{email:'kine@x.cl',since:new Date().toISOString(),rx:[],clear:[]}]});
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='dia';render();const e=[...document.querySelectorAll('.todo')].pop();e&&e.scrollIntoView({block:'center'})});await p.waitForTimeout(300);await p.screenshot({path:'/tmp/s_home.png'});
+await p.evaluate(()=>{view.evo=null;tab='entreno';render();const e=[...document.querySelectorAll('.banner')].find(x=>/plan está detenido/.test(x.textContent));e&&e.scrollIntoView({block:'center'})});await p.waitForTimeout(300);await p.screenshot({path:'/tmp/s_entreno.png'});await b.close();
+const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+const pt={id:9,email:'tenchi@x.cl',name:'Paciente T',since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:[{id:'s1',date:d(1),type:'caminata',result:'completa',borg:3,pain:0}],done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[{date:d(14),note:'caminó 20 min, sin molestias',at:new Date().toISOString(),by:'kinerecupera@gmail.com'}]};
+({b,p}=await open(8973,{email:'kine@x.cl',state:J(F.B),pro:[pt]}));await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render()});await p.waitForTimeout(400);await p.evaluate(()=>document.querySelector('[data-act=ptOpen]').click());await p.waitForTimeout(400);
+await p.evaluate(()=>{const e=document.querySelector('#rpN_9');e.closest('details').scrollIntoView({block:'start'})});await p.waitForTimeout(200);await p.screenshot({path:'/tmp/s_kine.png'});await b.close();s.close()})();

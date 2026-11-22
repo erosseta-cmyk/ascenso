@@ -1,0 +1,16 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');
+(async()=>{const srv=await serve(8997);
+const pts=[{id:7,email:"g@x.cl",name:"Guerrero",since:"2026-10-01",stage:2,parq:Array(10).fill(false),parqKey:"x",clear:[],hold:null,rx:[{ex:"tob_bombeo",name:"",dose:"3×15",note:""}],rxVersions:1,sessions:[],done:{},rxDone:{},loads:{}}];
+let {b,p,errs}=await open(8997,{email:"kine@x.cl",state:F.B,pro:pts});
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render()});await p.waitForTimeout(200);await p.click('[data-act="rxOpen"][data-id="7"]');
+ok('botón de pauta RECUPERA visible',!!(await p.$('[data-act="rxTpl"][data-t="rodilla_op"]')));
+await p.click('[data-act="rxTpl"][data-t="rodilla_op"]');const d=await p.evaluate(()=>SH.rxDraft.map(x=>x.ex+'|'+x.dose));
+ok('agrega los 4 que faltan sin duplicar el tobillo',d.length===5&&d.filter(x=>x.startsWith('tob_bombeo')).length===1,d);
+ok('dosis de la pauta RECUPERA',d.includes('mmii_flex_rodilla_silla|10 a 15 veces · 2 rondas, 1 vez al día')&&d.includes('res_bicicleta|10 a 15 min seguidos, 1 vez al día'),d);
+ok('nota de la pierna estirada',await p.evaluate(()=>/se te dobla la rodilla/.test(SH.rxDraft.find(x=>x.ex==="otr_pierna_estirada").note)));
+await p.click('[data-act="rxSave"]');await p.waitForTimeout(500);ok('se guarda',await p.evaluate(()=>SH.rxFor===null));
+ok('ficha nueva con pasos, cuidado y contraindicación',await p.evaluate(()=>{const h=rxHow("mmii_flex_rodilla_silla",1);return /paño o una toalla/.test(h)&&/Muévete lento/.test(h)}));
+ok('PTR en el buscador incluye la ficha nueva',await p.evaluate(()=>DXB.DX.find(x=>x.id==="ptr").a.includes("mmii_flex_rodilla_silla")&&DXB.V.startsWith("v3.4")));
+ok('ficha en Cadera y rodilla',await p.evaluate(()=>RXA.some(a=>a[2].some(s=>s[2].includes("mmii_flex_rodilla_silla")))));
+ok('cuidado de pierna estirada actualizado',await p.evaluate(()=>/sigue con apretar el muslo/.test(LIB.otr_pierna_estirada.care)));
+ok('sin errores',!errs.length,errs);await b.close();srv.close()})();

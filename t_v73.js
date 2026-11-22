@@ -1,0 +1,17 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8975);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+const base=(id,o)=>Object.assign({id,email:'p'+id+'@x.cl',name:'P'+id,since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:[],done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]},o);
+const lifted=base(1,{hold:{at:d(18),sid:'abc',kind:'dolor'},clear:[{kind:'hold',key:'abc',at:new Date(Date.now()-4*864e5).toISOString(),note:'hablé con ella'}]});
+const paused=base(2,{hold:{at:d(2),sid:'xyz',kind:'dolor'},sessions:[{id:'xyz',date:d(2),type:'fuerza',result:'completa',borg:4,pain:7,paused:'dolor'}]});
+const oldclr=base(3,{hold:{at:d(1),sid:'new',kind:'sintomas'},clear:[{kind:'hold',key:'old',at:new Date().toISOString(),note:'antigua'}]});
+let {b,p,errs}=await open(8975,{email:"kine@x.cl",state:J(F.B),pro:[lifted,paused,oldclr]});
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render()});await p.waitForTimeout(500);
+const r=await p.evaluate(()=>{const top=document.querySelector('#main').textContent.match(/(\d+) pacientes? tienen? el plan en pausa/);const g=n=>{const c=[...document.querySelectorAll('#main .card')].find(e=>e.querySelector('h3')&&e.querySelector('h3').textContent===n);const t=c.textContent;return{enp:/⏸ En pausa/.test(t),lev:/Pausa levantada · falta que abra la app/.test(t),form:!!c.querySelector('[data-k=hold]:not([data-off])'),info:/No necesitas volver a levantarla/.test(t),rev:/Revisar/.test(t)}};return{top:top&&top[1],order:[...document.querySelectorAll('#main .card h3')].map(e=>e.textContent),P1:g('P1'),P2:g('P2'),P3:g('P3'),rep:ptKineReport(SH.pro.find(x=>x.id===1))}});
+ok('banner superior cuenta solo las pausas no levantadas (2)',r.top==='2',r.top);
+ok('levantada: sin «En pausa» ni formulario, con aviso de sincronización',!r.P1.enp&&r.P1.lev&&!r.P1.form&&r.P1.info,r.P1);
+ok('levantada: sin «Revisar» por la pausa',!r.P1.rev,r.P1);
+ok('pausa abierta sigue igual',r.P2.enp&&r.P2.form&&!r.P2.lev,r.P2);
+ok('autorización de una pausa anterior no levanta una pausa nueva',r.P3.enp&&r.P3.form&&!r.P3.lev,r.P3);
+ok('las abiertas aparecen antes que la levantada',r.order.indexOf('P1')>r.order.indexOf('P2')&&r.order.indexOf('P1')>r.order.indexOf('P3'),r.order);
+ok('informe dice que la pausa fue levantada',/Pausa del plan levantada por el kinesiólogo/.test(r.rep));
+ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
