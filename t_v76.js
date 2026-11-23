@@ -1,5 +1,5 @@
 const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-(async()=>{const srv=await serve(8979);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+(async()=>{const srv=await serve(8979);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 // paciente con pauta (C)
 let {b,p,errs}=await open(8979,{email:'luis@x.cl',state:J(F.C),mine:F.mineC});
 let r=await p.evaluate(()=>{view.evo=null;S.seenStage=99;S.rxDone={};tab='dia';render();const bt=document.querySelector('[data-act=rxStart]');return bt&&bt.textContent});

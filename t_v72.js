@@ -1,5 +1,5 @@
 const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-(async()=>{const srv=await serve(8974);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+(async()=>{const srv=await serve(8974);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 const base=(id,s)=>({id,email:'p'+id+'@x.cl',name:'P'+id,since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:s,done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]});
 const res=base(1,[{id:'a',date:d(3),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas',resumedAt:Date.now()-864e5,liftBy:'kine'},{id:'b',date:d(1),type:'caminata',result:'completa',borg:3,pain:0}]);
 const self=base(2,[{id:'c',date:d(3),type:'fuerza',result:'completa',borg:3,pain:1,alert:true,paused:'sintomas',resumedAt:Date.now()-864e5}]);

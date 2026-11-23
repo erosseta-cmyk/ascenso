@@ -1,5 +1,5 @@
 const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-(async()=>{const srv=await serve(8977);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+(async()=>{const srv=await serve(8977);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 // paciente
 let {b,p,errs}=await open(8977,{email:'ana@x.cl',state:J(F.B)});
 const r=await p.evaluate(()=>{const o={};const t=S.train;const sv=JSON.stringify(S);const xp0=totalXP();

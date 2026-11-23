@@ -1,5 +1,5 @@
 const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-(async()=>{const srv=await serve(8975);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+(async()=>{const srv=await serve(8975);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 const base=(id,o)=>Object.assign({id,email:'p'+id+'@x.cl',name:'P'+id,since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:[],done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]},o);
 const lifted=base(1,{hold:{at:d(18),sid:'abc',kind:'dolor'},clear:[{kind:'hold',key:'abc',at:new Date(Date.now()-4*864e5).toISOString(),note:'hablé con ella'}]});
 const paused=base(2,{hold:{at:d(2),sid:'xyz',kind:'dolor'},sessions:[{id:'xyz',date:d(2),type:'fuerza',result:'completa',borg:4,pain:7,paused:'dolor'}]});

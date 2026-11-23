@@ -32,7 +32,7 @@ ok('«me equivoqué» desmarca la alerta sin pausar',!r.alert&&!r.hold,r);
 ok('sin errores paciente',!errs.length,errs);await b.close();
 
 // ===== 2. Kine: caminatas informadas =====
-const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toISOString().slice(0,10)};
+const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 const pt={id:9,email:'tenchi@x.cl',name:'Paciente T',since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:[{id:'s1',date:d(1),type:'caminata',result:'completa',borg:3,pain:0},{id:'s2',date:d(2),type:'fuerza',result:'completa',borg:4,pain:0,ex:['a'],exN:4}],done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]};
 ({b,p,errs}=await open(8971,{email:"kine@x.cl",state:J(F.B),pro:[pt]}));
 await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render()});await p.waitForTimeout(500);

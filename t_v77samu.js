@@ -1,0 +1,16 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8980);const st=J(F.B);let {b,p,errs}=await open(8980,{email:'ana@x.cl',state:st});
+const T="Detén la actividad. Si ahora tienes dolor u opresión en el pecho, falta de aire intensa o sensación de desmayo, llama al SAMU 131.";
+let r=await p.evaluate(()=>{view.evo=null;S.seenStage=99;S.train.hold=null;S.train.parq=Array(10).fill(false);tab='entreno';view.log=null;render();const c=[...document.querySelectorAll('#main .card')].find(e=>/Cuándo detenerte/.test(e.textContent));return{t:c&&c.textContent,call:!!(c&&c.querySelector('a[href="tel:131"]')),first:c&&c.textContent.indexOf('Detén la actividad')<c.textContent.indexOf('dolor articular')}});
+ok('Entreno: texto aprobado + botón Llamar al 131',r.t&&r.t.includes(T)&&r.call,r);ok('Entreno: la urgencia va antes de la lista',r.first);
+r=await p.evaluate(()=>document.body.innerHTML.includes('no ceden en unos minutos')||JSON.stringify(Object.values(LEGAL||{})).includes('no ceden en unos minutos'));
+ok('ya no queda «no ceden en unos minutos»',!r);
+r=await p.evaluate(async()=>{S.train.sessions=S.train.sessions.filter(x=>x.date!==today());view.log={};tab='entreno';render();document.querySelector('#logAlert').checked=true;document.querySelector('#logAlert').dispatchEvent(new Event('change',{bubbles:true}));const c=(s,v)=>{const e=document.querySelector(`[data-act=scale][data-s=${s}][data-v="${v}"]`);e&&e.click()};c('borg',3);c('pain',1);const f=document.querySelector('#logForm');(f.querySelector('input[name=res][value=completa]')||f.querySelector('input[name=res]')).checked=true;f.querySelectorAll('.logEx').forEach(x=>x.checked=true);document.querySelector('#logAlert').checked=true;f.requestSubmit();await new Promise(r=>setTimeout(r,300));const bx=document.querySelector('#sxBox');return{bx:!!bx,call:!!(bx&&bx.querySelector('a[href="tel:131"]')),t:bx&&bx.textContent}});
+ok('al marcar síntomas: texto aprobado + Llamar al 131 primero',r.bx&&r.call&&r.t.includes(T)&&r.t.indexOf('Llamar')<r.t.indexOf('¿cuál tuviste?'),r);
+r=await p.evaluate(()=>{S.train.hold={at:today(),kind:'sintomas',sid:'x'};tab='entreno';view.log=null;render();const m=document.querySelector('#main');return{call:!!m.querySelector('a[href="tel:131"]'),t:m.textContent.includes("Detén la actividad")}});
+ok('pausa por síntomas muestra el botón',r.call&&r.t,r);
+r=await p.evaluate(()=>{S.train.hold={at:today(),kind:'dolor',sid:'x'};render();const c=[...document.querySelectorAll('#main .card')].find(e=>/Tu plan está en pausa/.test(e.textContent));return c?!!c.querySelector('.banner.bad[role=alert]'):null});
+ok('pausa por dolor no muestra la urgencia en la tarjeta de pausa',r===false,r);
+r=await p.evaluate(()=>{S.train.hold=null;S.ui=S.ui||{};S.ui.simple=true;view.sOut=null;S.dayFb=S.dayFb||{};S.dayFb[today()]={pain:7};render();const m=document.querySelector('#main');return{call:!!m.querySelector('a[href="tel:131"]')}});
+ok('modo simple con dolor ≥6 muestra el botón',r.call,r);
+ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
