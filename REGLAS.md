@@ -20,8 +20,8 @@ Conversación de GPT para auditar: https://chatgpt.com/c/6afe0790-7794-83e8-85fa
 5. Publicar a los pacientes: SOLO cuando Esteban diga sí en el chat al acta del domingo. Entonces: merge de la rama a main, verificar en vivo versión, caché y cambio, y dejar rama ref-vNN como punto de regreso.
 6. Nunca decidir textos clínicos o legales, nunca firmar fichas, nunca liberar a todos sin el sí explícito de Esteban.
 
-## C. Auditoría UX integral después de CADA publicación (pedido de Esteban, 22-11-2026)
-1. `bash /home/claude/qa/ux_run.sh vNN` → páginas en /home/claude/ux_vNN/pages.
+## C. Auditoría UX integral después de CADA publicación, en la copia de prueba o a pacientes (pedido de Esteban, 22-11-2026)
+1. `bash /home/claude/qa/ux_run.sh vNN` (desde la rama de trabajo en /home/claude/ascenso) → páginas en /home/claude/ux_vNN/pages.
 2. MIRAR cada captura antes de enviarla: que muestre lo que dice su título (formulario abierto, síntomas marcados, día completado, etc.). Si no, corregir el script, no enviar.
 3. Publicar las páginas en revision/ux-vNN/ (main; solo esa carpeta) y esperar que carguen.
 4. Enviar a GPT con el encargo de qa/ux_audit_prompt.md (versión, cambios desde la auditoría anterior). Si ChatGPT no tiene cupo: NO usar «Restablecer uso»; programar la auditoría con send_later +2 h.
