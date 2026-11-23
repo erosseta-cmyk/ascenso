@@ -1,5 +1,5 @@
 const {serve,open}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-const OUT='/home/claude/ux';require('fs').mkdirSync(OUT,{recursive:true});
+const OUT=process.env.OUT||'/home/claude/ux';require('fs').mkdirSync(OUT,{recursive:true});
 const shot=async(p,name,prep)=>{try{if(prep)await p.evaluate(prep);await p.waitForTimeout(450);await p.evaluate(()=>window.scrollTo(0,0));const h=await p.evaluate(()=>Math.min(document.documentElement.scrollHeight,2600));await p.setViewportSize({width:390,height:h});await p.waitForTimeout(150);await p.screenshot({path:`${OUT}/${name}.png`});await p.setViewportSize({width:390,height:844});console.log('ok',name,h)}catch(e){console.log('ERR',name,e.message.slice(0,150))}};
 (async()=>{const s=await serve(8990);
 // 0. pantalla de acceso (sin sesión)
