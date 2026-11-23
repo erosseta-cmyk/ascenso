@@ -1,0 +1,16 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8981);const d=k=>{const x=new Date();x.setDate(x.getDate()-k);return x.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
+const base=(id,o)=>Object.assign({id,email:'p'+id+'@x.cl',name:'P'+id,since:new Date().toISOString(),stage:2,parq:Array(10).fill(false),hold:null,rx:[],sessions:[],done:{},dayFb:{},rxFb:{},rxDone:{},loads:{},clear:[],reported:[]},o);
+const one=[base(1,{sessions:[{id:'a',date:d(10),type:'caminata',result:'completa',borg:3,pain:0}]})];
+const two=[...one,base(2,{sessions:[{id:'b',date:d(9),type:'caminata',result:'completa',borg:3,pain:0}]})];
+let {b,p,errs}=await open(8981,{email:'kine@x.cl',state:J(F.B),pro:one});
+let r=await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render();const t=document.querySelector('#main').textContent;tab='planes';render();const pl=document.querySelector('#main').textContent;return{t,pay:/Pagar \$/.test(pl),trial:/días gratis/.test(pl),msg:/no paga membresía/.test(pl)}});
+ok('singular completo',/1 paciente lleva 7 días o más sin registrar actividad\. Al contactarlo, pregunta cómo se ha sentido y si necesita apoyo con su pauta\./.test(r.t),r.t.slice(0,300));
+ok('profesional: sin botón de pago ni prueba gratis',!r.pay&&!r.trial&&r.msg,r);
+ok('sin errores kine',!errs.length,errs);await b.close();
+({b,p,errs}=await open(8981,{email:'kine@x.cl',state:J(F.B),pro:two}));
+r=await p.evaluate(()=>{view.evo=null;S.seenStage=99;tab='pacientes';render();return document.querySelector('#main').textContent});
+ok('plural completo',/2 pacientes llevan 7 días o más sin registrar actividad\. Al contactarlos, pregunta cómo se han sentido y si necesitan apoyo con su pauta\./.test(r));await b.close();
+({b,p,errs}=await open(8981,{email:'ana@x.cl',state:J(F.B)}));
+r=await p.evaluate(()=>{tab='planes';render();const pl=document.querySelector('#main').textContent;return{pay:/Pagar \$/.test(pl),trial:/días gratis/.test(pl)}});
+ok('paciente: conserva prueba gratis y pago',r.pay&&r.trial,r);ok('sin errores paciente',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
