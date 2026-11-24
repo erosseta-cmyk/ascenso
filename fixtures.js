@@ -13,5 +13,5 @@ B.journal=[{id:"j1",date:day(3),text:"Me sentí bien",mood:4}];
 const C=base();C.profile={name:"Luis",route:"guerrero",birthY:1948,birthM:2,ageR:"75+",age60:true,av:{ch:"camina",v:"m"}};C.rxDone={};
 for(let i=0;i<12;i++){const o={};if(i%2===0)o["mmii_ext_rodilla"]=Date.now()-i*864e5;if(i%3===0)o["fz_hip_thrust"]=Date.now()-i*864e5;if(Object.keys(o).length)C.rxDone[day(i)]=o}
 C.loads={fz_hip_thrust:[{d:day(1),c:"10",r:[12,12,10],p:1},{d:day(5),c:"8",r:[10,10,9],p:2}]};
-const mineC=[{id:7,pro_name:"Klgo. Esteban Rosset",rxAt:day(14),rx:[{ex:"mmii_ext_rodilla",dose:"2×10 por lado, 1 vez al día"},{ex:"fz_hip_thrust",dose:"3×8-12, 3 veces por semana",c0:"8"},{ex:"",name:"Caminar 10 minutos",dose:"todos los días"}]}];
+const mineC=[{id:7,email:"kinerecupera@gmail.com",since:"2026-10-01T12:00:00Z",pro_name:"Klgo. Esteban Rosset",rxAt:day(14),rx:[{ex:"mmii_ext_rodilla",dose:"2×10 por lado, 1 vez al día"},{ex:"fz_hip_thrust",dose:"3×8-12, 3 veces por semana",c0:"8"},{ex:"",name:"Caminar 10 minutos",dose:"todos los días"}]}];
 module.exports={A,B,C,mineC};
