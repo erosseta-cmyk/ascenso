@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-gPLUW+1mATmYMdJuKepOpZUI7LZx1TSdSpeMx6m1PeU=' 'sha256-58rgIriI/4hR42ARECES5xNfdzwvt6AGMGjEymiTrHo=' 'sha256-5m2u4pl+QQ/JE5w8ukPTJ/in6Wfsb5JmjLwGXVXoulQ=' 'sha256-x6Jjqo12cp5KPEwhwsD15s6v7TK37973w38eJjFjN10='; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-qC28+TAGh8VVjoOD6YlT1rewdtON1Bh2+cDAT9XN3js=' 'sha256-58rgIriI/4hR42ARECES5xNfdzwvt6AGMGjEymiTrHo=' 'sha256-5m2u4pl+QQ/JE5w8ukPTJ/in6Wfsb5JmjLwGXVXoulQ=' 'sha256-x6Jjqo12cp5KPEwhwsD15s6v7TK37973w38eJjFjN10='; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0f17">
 <link rel="manifest" href="manifest.webmanifest">
@@ -369,6 +369,7 @@ function cache(){try{localStorage.setItem(LS,JSON.stringify(S));if(REV!=null)loc
 function setSync(x){const el=$("#syncState");if(el)el.textContent=x}
 function save(){S.updatedAt=Date.now();if(session)dirty=true;cache();if(session){setSync("guardando…");clearTimeout(saveT);saveT=setTimeout(flush,1200)}}
 function mergeState(Lc,R){const o=JSON.parse(JSON.stringify(Lc));
+ if(R.minor&&R.minor.state==="pending"&&R.onboard&&R.onboard.health===false&&o.onboard&&o.onboard.health){o.minor=R.minor;o.onboard.health=false;o.onboard.healthAt=null;o.train=blank().train;delete o.dayFb;delete o.rxFb}
  const d=JSON.parse(JSON.stringify(R.done||{}));for(const k in o.done||{})d[k]=Object.assign(d[k]||{},o.done[k]);o.done=d;
  const rd=JSON.parse(JSON.stringify(R.rxDone||{}));for(const k in o.rxDone||{})rd[k]=Object.assign(rd[k]||{},o.rxDone[k]);o.rxDone=rd;
  const lm=JSON.parse(JSON.stringify(R.loads||{}));for(const k in o.loads||{}){const u=new Map();for(const x of (lm[k]||[]).concat(o.loads[k]||[]))if(x&&x.at)u.set(x.at,x);lm[k]=[...u.values()].sort((a,b)=>b.at-a.at).slice(0,30)}o.loads=lm;
@@ -1030,7 +1031,7 @@ const A={
  delNote(e){S.journal=S.journal.filter(j=>j.id!==e.dataset.id);save();render()},
  async pay(){if(PAY.busy)return;PAY.busy=true;render();let url=null;try{const{data,error}=await sb.functions.invoke("mp-pago",{body:{}});if(!error&&data&&data.ok&&data.url)url=data.url}catch(e){}PAY.busy=false;if(url){location.href=url;return}window.open(CFG.payUrl,"_blank","noopener");render();toast("Se abrió el pago. Si tu acceso no se activa en 15 minutos, escribe a kinerecupera@gmail.com con el número de operación.")}, async trial(){if(M&&M.trial_used)return;const{data,error}=await sb.rpc("start_trial");if(error)return toast("No se pudo iniciar la prueba. Revisa tu conexión.");M=data;skew=Date.parse(data.server_now)-Date.now();render();toast("Tus "+CFG.trialDays+" días gratis comenzaron")},
  askConfirm(e){view.confirm=e.dataset.k;render()}, noConfirm(){view.confirm=null;render()},
- withdrawHealth(){clog("health",false);if(S.minor)S.minor={state:"pending"};S.onboard.health=false;S.onboard.healthAt=null;S.train=blank().train;view={noMerge:true};save();render();toast("Autorización retirada y datos de salud borrados")},
+ withdrawHealth(){clog("health",false);if(S.minor)S.minor={state:"pending"};S.onboard.health=false;S.onboard.healthAt=null;S.train=blank().train;delete S.dayFb;delete S.rxFb;view={noMerge:true};save();render();toast("Autorización retirada y datos de salud borrados")},
  exportAsk(){view.expAsk=true;view.exportTxt=null;render()}, exportNo(){view.expAsk=false;render()},
  export(){view.expAsk=false;const txt=JSON.stringify(S,null,2);try{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"application/json"}));a.download="ascenso-mis-datos.json";document.body.append(a);a.click();a.remove();toast("Datos descargados")}catch(e){view.exportTxt=txt;render()}},
  async deleteAll(){S=blank();view={noMerge:true};try{localStorage.removeItem(LS)}catch(e){}save();render();toast("Tus datos fueron borrados")},
