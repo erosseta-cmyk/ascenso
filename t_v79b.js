@@ -1,0 +1,12 @@
+const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
+(async()=>{const srv=await serve(8982);
+let {b,p,errs}=await open(8982,{email:'ana@x.cl',state:J(F.B)});
+let r=await p.evaluate(()=>{S.dayFb={[today()]:{pain:7,at:1}};S.rxFb={[today()]:{x:{f:'dolio',p:7}}};S.minor={state:'ok'};
+ const L=JSON.parse(JSON.stringify(S));const R=JSON.parse(JSON.stringify(S));R.minor={state:'pending'};R.onboard.health=false;R.train=blank().train;delete R.dayFb;delete R.rxFb;
+ const m=mergeState(L,R);return{h:m.onboard.health,st:m.minor.state,ses:m.train.sessions.length,fb:!!m.dayFb,rx:!!m.rxFb,j:(m.journal||[]).length===(L.journal||[]).length}});
+ok('merge: un retiro del adulto no se deshace con cambios locales',r.h===false&&r.st==='pending'&&r.ses===0&&!r.fb&&!r.rx&&r.j,r);
+r=await p.evaluate(()=>{const L=JSON.parse(JSON.stringify(S));L.minor={state:'ok'};L.onboard.health=true;const R=JSON.parse(JSON.stringify(L));const m=mergeState(L,R);return{h:m.onboard.health,ses:m.train.sessions.length}});
+ok('merge: sin retiro, todo igual',r.h===true&&r.ses>0,r);
+r=await p.evaluate(()=>{S.onboard.health=true;S.dayFb={[today()]:{pain:7}};S.rxFb={a:1};A.withdrawHealth();return{h:S.onboard.health,ses:S.train.sessions.length,fb:'dayFb' in S,rx:'rxFb' in S}});
+ok('retirar autorización borra también el dolor diario',r.h===false&&r.ses===0&&!r.fb&&!r.rx,r);
+ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
