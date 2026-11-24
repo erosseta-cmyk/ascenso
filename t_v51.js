@@ -2,7 +2,7 @@ const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>
 (async()=>{const srv=await serve(8999);
 // Adulto crea el código
 let {b,p,errs}=await open(8999,{email:"ana@x.cl",state:J(F.B)});await p.evaluate(()=>{view.evo=null;S.seenStage=99;S.ui.simpleAsked=1;tab='ajustes';render()});
-let t=await p.innerText('#main');ok('adulto ve «Autorizar a un menor de edad»',t.includes('Autorizar a un menor de edad'));
+let t=await p.innerText('#main');ok('adulto ve «Autorizar a un menor de edad»',/autorizar a un menor de edad/i.test(t));
 await p.evaluate(()=>{$('#maName').value='Ana';$('#maRel').value='Madre';$('#maOk').checked=true;document.querySelector('#maForm').requestSubmit()});await p.waitForTimeout(300);ok('exige nombre y apellido',!(await p.evaluate(()=>JSON.parse(localStorage.getItem('stub.ma')||'[]').length)));
 await p.evaluate(()=>{$('#maName').value='Ana Prueba';$('#maRel').value='Madre';$('#maOk').checked=true;document.querySelector('#maForm').requestSubmit()});await p.waitForTimeout(700);
 const code=await p.evaluate(()=>JSON.parse(localStorage.getItem('stub.ma'))[0].code);t=await p.innerText('#main');ok('muestra el código de 8 números',t.replace(/\s/g,'').includes(code),t.slice(0,300));
@@ -29,4 +29,4 @@ await p.evaluate(()=>document.querySelector('[data-act=nowAdult][data-v="1"]').c
 // un menor no ve la tarjeta de adulto
 const sm=J(F.B);sm.profile.birthY=Y-16;sm.profile.birthM=1;sm.minor={state:"parent",by:"Ana Prueba",rel:"Madre",at:Date.now(),src:"code"};
 ({b,p,errs}=await open(8999,{email:"nico@x.cl",state:sm}));await p.evaluate(ma=>{const a=JSON.parse(ma);a[0].minor='nico@x.cl';a[0].used=new Date().toISOString();localStorage.setItem('stub.ma',JSON.stringify(a))},ma);await p.evaluate(async()=>{await loadShares();view.evo=null;tab='ajustes';render()});
-t=await p.innerText('#main');ok('un menor no puede crear códigos',!t.includes('Autorizar a un menor de edad'));await b.close();srv.close()})();
+t=await p.innerText('#main');ok('un menor no puede crear códigos',!/autorizar a un menor de edad/i.test(t));await b.close();srv.close()})();
