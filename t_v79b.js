@@ -7,6 +7,10 @@ let r=await p.evaluate(()=>{S.dayFb={[today()]:{pain:7,at:1}};S.rxFb={[today()]:
 ok('merge: un retiro del adulto no se deshace con cambios locales',r.h===false&&r.st==='pending'&&r.ses===0&&!r.fb&&!r.rx&&r.j,r);
 r=await p.evaluate(()=>{const L=JSON.parse(JSON.stringify(S));L.minor={state:'ok'};L.onboard.health=true;const R=JSON.parse(JSON.stringify(L));const m=mergeState(L,R);return{h:m.onboard.health,ses:m.train.sessions.length}});
 ok('merge: sin retiro, todo igual',r.h===true&&r.ses>0,r);
+r=await p.evaluate(()=>{S.minor=null;view.evo=null;S.seenStage=99;tab='ajustes';render();const t=document.querySelector('#main').textContent;return{ms:t.indexOf('Modo simple'),lg:t.indexOf('Tamaño de la letra'),sh:t.indexOf('Con quién compartes'),fa:t.indexOf('Familia: autorizar')}});
+ok('Ajustes: modo simple y letra antes de compartir y Familia',r.ms>0&&r.lg>0&&r.ms<r.sh&&r.lg<r.sh&&r.sh<r.fa,r);
+r=await p.evaluate(()=>{tab='bitacora';render();return document.querySelector('#main').textContent});
+ok('Bitácora: sin promesa absoluta y avisa que la copia la incluye',!/ni nadie más/.test(r)&&/incluirá tu bitácora/.test(r));
 r=await p.evaluate(()=>{S.onboard.health=true;S.dayFb={[today()]:{pain:7}};S.rxFb={a:1};A.withdrawHealth();return{h:S.onboard.health,ses:S.train.sessions.length,fb:'dayFb' in S,rx:'rxFb' in S}});
 ok('retirar autorización borra también el dolor diario',r.h===false&&r.ses===0&&!r.fb&&!r.rx,r);
 ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
