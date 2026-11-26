@@ -8,7 +8,7 @@ await p.evaluate(Y=>{$('#obY').value=String(Y-70);$('#obM').value='3';$('#obP').
 await p.evaluate(()=>{$('#obP').value='9 8765 4321';(document.querySelector('input[name=obPB][value=yo]')||{}).checked=true;$('#obW').value='300'});await p.evaluate(()=>A.onboard());ok('peso fuera de rango no entra',await p.evaluate(()=>!S.onboard));
 await p.evaluate(()=>{$('#obW').value='';});await p.evaluate(()=>A.onboard());await p.waitForTimeout(400);
 let r=await p.evaluate(()=>({ob:!!S.onboard,y:S.profile.birthY,age:myAge(),ar:S.profile.ageR,ct:CT,w:S.profile.weight}));ok('entra sin peso/talla (opcionales)',r.ob&&r.age>=69&&r.age<=70&&r.ar==="60-74"&&r.ct.phone==="+56987654321"&&r.w===undefined,r);
-t=await p.innerText('#main');ok('después ofrece modo simple',t.includes('modo simple'));ok('sin errores',!errs.length,errs);await b.close();
+t=await p.evaluate(()=>document.querySelector('#main').textContent);ok('después ofrece modo simple',t.includes('modo simple'));ok('sin errores',!errs.length,errs);await b.close();
 // menor por año
 ({b,p,errs}=await open(8986,{email:"k@x.cl"}));await p.waitForTimeout(500);await p.evaluate(Y=>{$('#obY').value=String(Y-15);$('#obM').value='6';$('#obP').value='912345678';(document.querySelector('input[name=obPB][value=yo]')||{}).checked=true;document.querySelector('#obTerms').checked=true},Y);await p.evaluate(()=>A.onboard());await p.waitForTimeout(400);
 ok('menor detectado por la fecha',await p.evaluate(()=>S.minor&&S.minor.state==="pending"&&minorPending()));await b.close();

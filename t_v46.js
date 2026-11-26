@@ -8,7 +8,7 @@ ok('día de descanso: mensaje claro',t.includes('Hoy no te tocan ejercicios'),t.
 await p.evaluate(()=>{tab='entreno';render()});t=await p.innerText('#main');ok('Entreno muestra los días',t.includes('📅')&&t.includes('hoy no toca'));ok('sin errores',!errs.length,errs);await b.close();
 ({b,p,errs}=await open(8971,{email:"m@x.cl",state:F.B,mine:mk([{ex:"fz_silla",name:"",dose:"3×10",note:"",days:[dow]},{ex:"mmii_ext_cadera",name:"",dose:"2×10",note:"",days:other},{ex:"tob_inv_ev",name:"",dose:"3×15",note:""}])}));
 await p.evaluate(()=>{view.evo=null;S.seenStage=99;render()});t=await p.innerText('#main');
-ok('Mi día solo muestra lo de hoy',/Hoy: 0 de 2 hechos/.test(t)&&!t.includes('Extensión de cadera'),t.slice(0,500));
+ok('Mi día solo muestra lo de hoy',/0 de 2 ejercicios hechos hoy/.test(t)&&!t.includes('Extensión de cadera'),t.slice(0,500));
 await p.evaluate(()=>A.rxStart());const s=await p.evaluate(()=>rxName(rxAll()[view.rxh]));ok('Empezar abre uno de hoy',s.startsWith('Sentarse'),s);
 const img=await p.evaluate(()=>rxSrc('tob_inv_ev'));ok('tobillo nuevo con imagen',!!img,img);ok('sin errores',!errs.length,errs);await b.close();
 ({b,p,errs}=await open(8971,{email:"kine@x.cl",state:F.B,pro:[{id:7,email:"m@x.cl",name:"P",since:"2026-10-01",stage:1,parq:Array(10).fill(false),parqKey:"x",clear:[],rx:[{ex:"fz_silla",name:"",dose:"3×10",note:"",days:other}],rxVersions:1,sessions:[],done:{},rxDone:{},loads:{}}]}));

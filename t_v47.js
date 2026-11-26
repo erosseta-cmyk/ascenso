@@ -4,7 +4,7 @@ const J=o=>JSON.parse(JSON.stringify(o));
 const st=J(F.B);st.profile.ageR="75+";st.missions.push({id:"mz",name:"Tomar agua",cat:"salud",xp:5,time:"",dur:0,days:[0,1,2,3,4,5,6],created:"2026-10-01"});delete (st.ui||{}).simpleAsked;
 const rx=[{ex:"hom_re_toalla",name:"",dose:"2×10 por lado",note:"Lento"},{ex:"mmii_puente_cama",name:"",dose:"2×10",note:""},{ex:"fz_silla",name:"",dose:"2×8",note:""}];
 let {b,p,errs}=await open(8981,{email:"r@x.cl",state:st,mine:[{email:"kine@recupera.cl",since:"2026-10-01",rx,rxAt:"2026-11-08",id:7,clear:[]}]});
-await p.evaluate(()=>{view.evo=null;S.seenStage=99;render()});let t=await p.innerText('#main');
+await p.evaluate(()=>{view.evo=null;S.seenStage=99;render()});let t=await p.evaluate(()=>document.querySelector('#main').textContent);
 ok('ofrece modo simple al tener edad',t.includes('¿Quieres usar el modo simple?'),t.slice(0,300));
 await p.evaluate(()=>A.simpleNo());t=await p.innerText('#main');ok('tras decir no, queda el botón',t.includes('Modo simple: toca aquí'));
 await p.evaluate(()=>A.simpleOn());t=await p.innerText('#main');

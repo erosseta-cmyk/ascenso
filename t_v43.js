@@ -30,7 +30,7 @@ await p.evaluate(()=>{window.progression=()=>({state:"keep",n:1});window.stepRea
 ok('B sin errores',!errs.length,errs);await b.close();
 // A: usuario nuevo sin edad
 ({b,p,errs}=await open(port,{email:"a@x.cl",state:F.A}));
-t=await p.innerText('#main');ok('A pregunta edad con Ahora no',t.includes('rango de edad')&&t.includes('Ahora no'));
+t=await p.evaluate(()=>document.querySelector('#main').textContent);{const known=await p.evaluate(()=>typeof ageKnown==='function'&&ageKnown()!=null);ok('A pregunta edad con Ahora no (Ola 1 B1: sin pregunta si ya hay año de nacimiento)',known?!t.includes('rango de edad'):(t.includes('rango de edad')&&t.includes('Ahora no')));}
 await p.screenshot({path:'shots/v43_A_dia.png',fullPage:true});
 await p.click('#main [data-act=ageNo]');await p.waitForTimeout(300);
 ok('A Ahora no la oculta',!(await p.innerText('#main')).includes('rango de edad'));

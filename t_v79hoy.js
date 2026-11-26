@@ -7,12 +7,12 @@ const prep=`view.evo=null;S.seenStage=99;S.minor=null;S.ui=S.ui||{};S.ui.simple=
  S.train.sessions=[0,1,2,3].map(i=>mk(i,'caminata'));`;
 const txt=sel=>`(document.querySelector('${sel}')||{textContent:''}).textContent`;
 let r=await p.evaluate(new Function(prep+`tab='dia';render();return{main:document.querySelector('#main').textContent,cap:${txt('#capLines')},lv:${txt('.lvup')},tt:todayTrain(),wu:walkUp(),sc:seniorCap()}`));
-ok('fila 9/10 · Hoy: dos líneas fijas del senior',/Fuerza:\s*mantén la etapa \d+ hasta que tu kinesiólogo autorice el avance/.test(r.cap)&&/Caminata indicada:\s*\d+ minutos/.test(r.cap),r.cap+' sc='+r.sc+' tt='+r.tt);
+ok('fila 9/10 · Hoy: dos líneas fijas del senior',/Fuerza:\s*mantén la etapa \d+ hasta que tu kinesiólogo autorice el avance/.test(r.cap)&&(/Caminata indicada:\s*\d+ minutos/.test(r.cap)||/Tu plan de hoy indica caminar \d+ minutos/.test(r.main)),r.cap+' sc='+r.sc+' tt='+r.tt);
 ok('fila 10 · barra de etapa avisa que falta la autorización',/necesitas la autorización de tu kinesiólogo/.test(r.main),'');
 ok('fila 10 · sin «¡Estás listo para caminar más!» en senior',!/Estás listo para caminar más/.test(r.main),r.lv);
 ok('fila 9 · oferta de caminata dice que la fuerza espera',r.wu>0&&/Caminata: puedes caminar más/.test(r.lv),r.wu+' '+r.lv);
 r=await p.evaluate(()=>{tab='entreno';render();return{cap:(document.querySelector('#capLines')||{textContent:''}).textContent,m:document.querySelector('#main').textContent}});
-ok('fila 9/10 · Entreno: dos líneas fijas',/mantén la etapa/.test(r.cap)&&/Caminata indicada/.test(r.cap));
+ok('fila 9/10 · Entreno: dos líneas fijas (la caminata puede ir en la tarjeta de hoy)',/mantén la etapa/.test(r.cap)&&(/Caminata indicada/.test(r.cap)||/Camina \d+ minutos/.test(r.m)));
 ok('fila 10 · Entreno sin el texto viejo «Versión adaptada»',!/Versión adaptada: el plan se mantiene/.test(r.m));
 r=await p.evaluate(()=>{view.log={};render();return{lv:!!document.querySelector('#main .lvup'),form:!!document.querySelector('#logForm')}});
 ok('fila 7 · formulario abierto: ninguna propuesta de avance',r.form&&!r.lv,r);

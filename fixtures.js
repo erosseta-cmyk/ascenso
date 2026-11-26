@@ -7,7 +7,7 @@ const B=base();B.profile={name:"Rosa",route:"aventurera",birthY:1958,birthM:4,ag
 B.missions=[{id:"m1",name:"Caminar 20 minutos",cat:"Cuerpo",xp:20,time:"",dur:0,days:[0,1,2,3,4,5,6],created:day(22)},{id:"m2",name:"Tomar agua",cat:"Alimentación",xp:10,time:"",dur:0,days:[0,1,2,3,4,5,6],created:day(22)}];
 for(let i=1;i<=21;i++){if(i%3)B.done[day(i)]={m1:20,m2:10}}
 B.train.plan={days:"lun-mie-vie",walk:15,since:day(21)};B.train.senior=true;B.train.stage=2;B.train.stageAt=Date.now()-8*864e5;B.train.lvl=1;B.train.lvlAt=Date.now()-4*864e5;B.seenStage=3;
-let id=0;for(let i=1;i<=20;i+=2)B.train.sessions.push({ex:[],exN:4,id:"s"+(id++),at:Date.now()-i*864e5,date:day(i),type:i%4===1?"fuerza":"caminata",stage:i<8?2:1,result:"completa",borg:5,pain:1,painNew:false,alert:false,note:"",xp:50});
+let id=0;for(let i=1;i<=20;i+=2)B.train.sessions.push({ex:i%4===1?["x1","x2","x3","x4"]:[],exN:i%4===1?4:0,id:"s"+(id++),at:Date.now()-i*864e5,date:day(i),type:i%4===1?"fuerza":"caminata",stage:i<8?2:1,result:"completa",borg:5,pain:1,painNew:false,alert:false,note:"",xp:50});
 B.journal=[{id:"j1",date:day(3),text:"Me sentí bien",mood:4}];
 // C: paciente con pauta del kine, cargas y marcas, mayor de 75
 const C=base();C.profile={name:"Luis",route:"guerrero",birthY:1948,birthM:2,ageR:"75+",age60:true,av:{ch:"camina",v:"m"}};C.rxDone={};
