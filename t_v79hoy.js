@@ -29,4 +29,10 @@ ok('fila 12 · sin senior: sin líneas fijas y «Hoy toca»',!r.cap&&/Hoy toca/.
 r=await p.evaluate(()=>{tab='ajustes';view.expAsk=true;render();const e=document.querySelector('#expSum').textContent;view.expAsk=false;render();const m=document.querySelector('#main').textContent;return{e,gr:/Borrar mis datos · Gratis/.test(m),nb:/Borrar mi progreso y mis notas/.test(m)}});
 ok('#48 resumen: formato y quién puede leerlo',/formato JSON/.test(r.e)&&/Quien tenga el archivo podrá leer/.test(r.e)&&!/queda en este teléfono/.test(r.e));
 ok('#45 botón de borrado con su efecto real y sin «Gratis»',!r.gr&&r.nb,r);
+r=await p.evaluate(()=>{S.train.senior=true;S.train.stage=SCAP;stepReady=()=>true;S.train.sessions.unshift({id:'hoy2',date:today(),type:'fuerza',stage:S.train.stage,result:'completa',borg:4,pain:0,at:Date.now()});const u=lvUp();tab='dia';render();const m=document.querySelector('#main');const td=m.querySelector('#todoDone'),lv=m.querySelector('.lvup');return{u,ordenOk:!!td&&(!lv||!!(td.compareDocumentPosition(lv)&Node.DOCUMENT_POSITION_FOLLOWING)),td:td?td.textContent:''}});
+ok('#51 escalón nombra la sesión de fuerza',r.u&&r.u.act==='stepUp'&&/en mi próxima sesión de fuerza/.test(r.u.btn),r.u);
+ok('#52 senior: escalón dentro de la etapa y la etapa requiere autorización',r.u&&/dentro de tu etapa/.test(r.u.title)&&/requiere la autorización de tu kinesiólogo/.test(r.u.why),r.u);
+ok('#32 el resumen de hoy va antes de las propuestas',r.ordenOk&&/Hoy registraste fuerza/.test(r.td),r.td);
+r=await p.evaluate(()=>{tab='ajustes';view.expAsk=true;render();const e=document.querySelector('#expSum').textContent;view.expAsk=false;return e});
+ok('#55 resumen con períodos reales',/del \d{2}-\d{2}-\d{4} al \d{2}-\d{2}-\d{4}/.test(r)&&!/todo tu historial/.test(r),r.slice(0,300));
 ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
