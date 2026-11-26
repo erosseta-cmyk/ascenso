@@ -7,11 +7,11 @@ let {b,p,errs}=await open(8987,{email:'ana@x.cl',state:st,mine:J(F.mineC)});
 let r=await p.evaluate(()=>{view.evo=null;S.seenStage=99;S.minor=null;S.ui=S.ui||{};S.ui.simple=false;const t=S.train;t.parq=Array(10).fill(false);t.sessions=t.sessions.filter(x=>x.date!==today());t.sessions.unshift({id:'sx',date:today(),type:'caminata',stage:t.stage,result:'completa',borg:4,pain:2,alert:true,sx:['pecho'],at:Date.now()});t.hold={at:today(),kind:'sintomas',sid:'sx'};
  // ayer también hubo pausa y no hizo la caminata, pero sí el agua? no: no hizo nada
  S.pauseDays={[addDays(today(),-1)]:1};S.done[addDays(today(),-1)]={ma:20};
- tab='dia';render();const m=document.querySelector('#main');const rows=[...m.querySelectorAll('.mission')].map(x=>({n:x.querySelector('b').textContent,p:x.classList.contains('paused'),chk:!!x.querySelector('[data-act=toggle]')}));
+ tab='dia';render();const m=document.querySelector('#main');const rows=[...m.querySelectorAll('.mission')].map(x=>({n:x.querySelector('b').textContent,p:x.classList.contains('paused'),chk:!!x.querySelector('[data-act=toggle]'),tim:!!x.querySelector('[data-act=startTimer]')}));
  const msgs=[];const t0=window.toast;window.toast=x=>{msgs.push(x)};A.toggle({dataset:{id:'mc'}});window.toast=t0;
  return{rows,marcado:!!(S.done[today()]||{}).mc,msgs,stk:streak(),mood:moodDays(),pd:S.pauseDays[today()]}});
 const cam=r.rows.find(x=>/Caminar/.test(x.n)),agua=r.rows.find(x=>/agua/.test(x.n));
-ok('#59 caminata en pausa, sin marcar',cam&&cam.p&&!cam.chk&&!r.marcado&&r.msgs.some(x=>/en pausa junto con tu plan/.test(x)),r);
+ok('#59 caminata en pausa, sin marcar ni temporizador',cam&&cam.p&&!cam.chk&&!cam.tim&&!r.marcado&&r.msgs.some(x=>/en pausa junto con tu plan/.test(x)),r);
 ok('#59 hábito no físico sigue activo',agua&&!agua.p&&agua.chk,r);
 ok('#59 la pausa no corta la racha ni baja el ánimo',r.stk>=5&&r.mood===0&&r.pd===1,r);
 r=await p.evaluate(()=>{const keep=S.missions;S.missions=S.missions.filter(m=>m.id==='mc');const y=addDays(today(),-1),y2=addDays(today(),-2);const dy=S.done[y],dy2=S.done[y2];delete S.done[y];delete S.done[y2];S.pauseDays[y]=1;S.pauseDays[y2]=1;const a=streak();delete S.pauseDays[y];delete S.pauseDays[y2];const b2=streak();S.pauseDays[y]=1;S.done[y]=dy;S.done[y2]=dy2;S.missions=keep;return{conPausa:a,sinPausa:b2}});
