@@ -9,13 +9,13 @@ ok('F02 el siguiente usuario no ve el celular anterior',!(await p.evaluate(()=>d
 // F03
 const s3=J(F.B);delete s3.profile.birthY;delete s3.profile.birthM;s3.ui={simple:true};
 ({b,p,errs}=await open(8997,{email:"m@x.cl",state:s3}));await p.evaluate(()=>{view.evo=null;render()});
-await p.evaluate(Y=>{$('#pgY').value=String(Y-15);$('#pgM').value='6';$('#pgP').value='912345678';document.querySelector('#profGate').requestSubmit()},Y);await p.waitForTimeout(500);
+await p.evaluate(Y=>{$('#pgY').value=String(Y-15);$('#pgM').value='6';$('#pgP').value='912345678';(document.querySelector('input[name=pgPB][value=yo]')||{}).checked=true;document.querySelector('#profGate').requestSubmit()},Y);await p.waitForTimeout(500);
 let r=await p.evaluate(()=>({gate:!!document.querySelector('#profGate'),minor:S.minor,health:S.onboard.health,txt:document.querySelector('#main').innerText.slice(0,160)}));
 ok('F03 pasa a la autorización del adulto',!r.gate&&r.minor&&r.minor.state==="pending"&&r.health===false&&minorTxt(r.txt),r);function minorTxt(t){return /apoderad|adulto|madre|padre|tutor/i.test(t)}
 ok('F03 sin errores',!errs.length,errs);await b.close();
 // Edad mínima
 ({b,p,errs}=await open(8997,{email:"n@x.cl"}));await p.waitForTimeout(400);
-for(const [age,exp] of [[6,false],[13,false],[15,true]]){await p.evaluate(([Y,age])=>{$('#obY').value=String(Y-age);$('#obM').value='1';$('#obP').value='912345678';document.querySelector('#obTerms').checked=true},[Y,age]);await p.evaluate(()=>A.onboard());await p.waitForTimeout(350);ok('edad '+age+(exp?' entra (con autorización pendiente)':' no puede registrarse'),(await p.evaluate(()=>!!S.onboard))===exp)}
+for(const [age,exp] of [[6,false],[13,false],[15,true]]){await p.evaluate(([Y,age])=>{$('#obY').value=String(Y-age);$('#obM').value='1';$('#obP').value='912345678';(document.querySelector('input[name=obPB][value=yo]')||{}).checked=true;document.querySelector('#obTerms').checked=true},[Y,age]);await p.evaluate(()=>A.onboard());await p.waitForTimeout(350);ok('edad '+age+(exp?' entra (con autorización pendiente)':' no puede registrarse'),(await p.evaluate(()=>!!S.onboard))===exp)}
 ok('15 años queda pendiente del adulto',await p.evaluate(()=>minorPending()));await b.close();
 // F08 paso extra
 const se=J(F.B);se.ui={simple:true,simpleAsked:1,big:true};const d=new Date(),dd=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');se.dayFb={[dd]:{pain:8,at:Date.now()}};

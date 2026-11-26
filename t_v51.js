@@ -2,6 +2,7 @@ const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>
 (async()=>{const srv=await serve(8999);
 // Adulto crea el código
 let {b,p,errs}=await open(8999,{email:"ana@x.cl",state:J(F.B)});await p.evaluate(()=>{view.evo=null;S.seenStage=99;S.ui.simpleAsked=1;tab='ajustes';render()});
+if(await p.evaluate(()=>typeof ADULTS_ONLY!=='undefined'&&ADULTS_ONLY)){console.log('RETIRADO (L1 solo adultos) t_v51 completo: flujo de autorización de menores');await b.close();srv.close();process.exit(0)}
 let t=await p.innerText('#main');ok('adulto ve «Autorizar a un menor de edad»',/autorizar a un menor de edad/i.test(t));
 await p.evaluate(()=>{$('#maName').value='Ana';$('#maRel').value='Madre';$('#maOk').checked=true;document.querySelector('#maForm').requestSubmit()});await p.waitForTimeout(300);ok('exige nombre y apellido',!(await p.evaluate(()=>JSON.parse(localStorage.getItem('stub.ma')||'[]').length)));
 await p.evaluate(()=>{$('#maName').value='Ana Prueba';$('#maRel').value='Madre';$('#maOk').checked=true;document.querySelector('#maForm').requestSubmit()});await p.waitForTimeout(700);
@@ -13,7 +14,7 @@ await p.evaluate(()=>{$('#pfW').value='70';document.querySelector('#datosForm').
 const ma=await p.evaluate(()=>localStorage.getItem('stub.ma'));ok('adulto sin errores',!errs.length,errs);await b.close();
 // Menor usa el código
 ({b,p,errs}=await open(8999,{email:"nico@x.cl"}));await p.waitForTimeout(400);await p.evaluate(ma=>localStorage.setItem('stub.ma',ma),ma);
-await p.evaluate(Y=>{$('#obY').value=String(Y-15);$('#obM').value='1';$('#obP').value='912345678';document.querySelector('#obTerms').checked=true},Y);await p.evaluate(()=>A.onboard());await p.waitForTimeout(500);
+await p.evaluate(Y=>{$('#obY').value=String(Y-15);$('#obM').value='1';$('#obP').value='912345678';(document.querySelector('input[name=obPB][value=yo]')||{}).checked=true;document.querySelector('#obTerms').checked=true},Y);await p.evaluate(()=>A.onboard());await p.waitForTimeout(500);
 t=await p.innerText('#main');ok('menor ve la pantalla del código, sin formulario para el adulto',t.includes('Código de autorización')&&!(await p.$('#mpName')),t.slice(0,200));
 ok('antes de autorizar no hay consentimiento de salud',await p.evaluate(()=>S.onboard.health===false&&S.minor.state==="pending"));
 await p.evaluate(()=>{$('#mpCode').value='99999999';document.querySelector('#minorForm').requestSubmit()});await p.waitForTimeout(400);ok('código inventado no sirve',await p.evaluate(()=>minorPending()));

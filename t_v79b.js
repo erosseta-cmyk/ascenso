@@ -8,7 +8,7 @@ ok('merge: un retiro del adulto no se deshace con cambios locales',r.h===false&&
 r=await p.evaluate(()=>{const L=JSON.parse(JSON.stringify(S));L.minor={state:'ok'};L.onboard.health=true;const R=JSON.parse(JSON.stringify(L));const m=mergeState(L,R);return{h:m.onboard.health,ses:m.train.sessions.length}});
 ok('merge: sin retiro, todo igual',r.h===true&&r.ses>0,r);
 r=await p.evaluate(()=>{S.minor=null;view.evo=null;S.seenStage=99;tab='ajustes';render();const t=document.querySelector('#main').textContent;return{ms:t.indexOf('Modo simple'),lg:t.indexOf('Tamaño de la letra'),sh:t.indexOf('Con quién compartes'),fa:t.indexOf('Familia: autorizar')}});
-ok('Ajustes: modo simple y letra antes de compartir y Familia',r.ms>0&&r.lg>0&&r.ms<r.sh&&r.lg<r.sh&&r.sh<r.fa,r);
+ok('Ajustes: modo simple y letra antes de compartir (Familia oculta por L1)',r.ms>0&&r.lg>0&&r.ms<r.sh&&r.lg<r.sh&&r.fa<0,r);
 r=await p.evaluate(()=>{tab='bitacora';render();return document.querySelector('#main').textContent});
 ok('Bitácora: sin promesa absoluta y avisa que la copia la incluye',!/ni nadie más/.test(r)&&/incluirá tu bitácora/.test(r));
 r=await p.evaluate(()=>{S.onboard.health=true;S.dayFb={[today()]:{pain:7}};S.rxFb={a:1};A.withdrawHealth();return{h:S.onboard.health,ses:S.train.sessions.length,fb:'dayFb' in S,rx:'rxFb' in S}});

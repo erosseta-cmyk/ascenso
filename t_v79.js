@@ -7,7 +7,7 @@ let r=await p.evaluate(async()=>{view.evo=null;S.seenStage=99;await loadShares()
 ok('#12 Ajustes: con quién compartes',/Con quién compartes tu avance/.test(r.card)&&/kine@x\.cl/.test(r.card)&&r.off,r.card);
 ok('#12 Ajustes: qué ve y qué no',/Ve:.*No ve:.*bitácora ni tus pagos/.test(r.card));
 ok('#12 Ajustes: no atiende urgencias',/no atiende urgencias.*SAMU 131/.test(r.card));
-ok('#13 finalidad del celular',/Para que tu kinesiólogo pueda contactarte/.test(r.t)&&/salvo que lo aceptes aparte/.test(r.t));
+ok('#13 finalidad del celular (L4: opcional)',/Tu celular\s*\(opcional\)/.test(r.t)&&/salvo que lo aceptes aparte/.test(r.t));
 ok('#13 es mío / de quien me ayuda',r.pb.join()==='yo,ayuda',r.pb);
 ok('#13 WhatsApp aparte',/Este permiso es aparte/.test(r.t));
 r=await p.evaluate(()=>{document.querySelector('input[name="pfPB"][value="ayuda"]').checked=true;return readProf('pf')});

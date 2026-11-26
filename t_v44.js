@@ -12,7 +12,7 @@ ok('vencido: botón de pago directo',!!(await p.$('#main .renew [data-act=pay]')
 t=await p.innerText('#main');ok('por vencer: aviso con días',/Tu plan vence en [34] días/.test(t),t.slice(0,300));
 await p.evaluate(()=>{tab='ajustes';render()});await p.evaluate(()=>{document.querySelector('#waPhone').value='12345';document.querySelector('#waOk').checked=true;document.querySelector('#waForm').requestSubmit()});await p.waitForTimeout(400);
 ok('número inválido rechazado',!(await p.evaluate(()=>CT&&CT.wa_ok)));
-await p.evaluate(()=>{document.querySelector('#waPhone').value='9 1234 5678';document.querySelector('#waOk').checked=true;document.querySelector('#waForm').requestSubmit()});await p.waitForTimeout(400);
+await p.evaluate(()=>{document.querySelector('#waPhone').value='9 1234 5678';document.querySelector('input[name=waPB][value=yo]').checked=true;document.querySelector('#waOk').checked=true;document.querySelector('#waForm').requestSubmit()});await p.waitForTimeout(400);
 ok('acepta recordatorios con número válido',await p.evaluate(()=>CT.wa_ok&&CT.phone==="+56912345678"));
 await p.screenshot({path:'shots/v44_ajustes.png'});
 await p.evaluate(()=>document.querySelector('[data-act=waOff]').click());await p.waitForTimeout(400);
