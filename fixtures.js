@@ -1,4 +1,4 @@
-const day=o=>{const d=new Date();d.setDate(d.getDate()-o);return d.toISOString().slice(0,10)};
+const day=o=>{const d=new Date();d.setDate(d.getDate()-o);return d.toLocaleDateString("sv-SE",{timeZone:"America/Santiago"})};
 const base=()=>({v:1,updatedAt:Date.now(),created:day(30),profile:{name:"Paciente",route:"aventurera",birthY:1990,birthM:5,av:{ch:"camina",v:"f"}},onboard:{at:Date.now()-30*864e5,version:"2026-10-05-v1",health:true,healthAt:Date.now()-30*864e5},missions:[],done:{},journal:[],train:{parq:Array(10).fill(false),parqAt:day(20),parqLog:[],cleared:null,clearedBy:null,hold:null,plan:null,stage:1,stageAt:0,walkAt:0,sessions:[],deleted:[]},member:{trialStart:null,periods:[],suspended:false,audit:[]},timer:null,ui:{}});
 // A: usuario nuevo, sin edad, sin plan
 const A=base();A.created=day(0);A.onboard.at=Date.now();

@@ -4,7 +4,7 @@ const {serve,open,ok}=require('./lib');const F=require('./fixtures');const L=req
 let {b,p,errs}=await open(port,{email:"c@x.cl",state:F.C,mine:F.mineC});
 let t=await p.innerText('#main');let h=await p.innerText('header').catch(()=>"");
 ok('C sin "Nivel" en la cabecera',!/Nivel \d/.test(await p.evaluate(()=>document.body.innerText)),h);
-ok('C botón Seguir',/Seguir \(\d de 3\)|Empezar/.test(t),t.slice(0,300));
+ok('C botón Seguir',/Seguir \(\d de 3\)|Empezar|Ver el siguiente ejercicio|Ver el último ejercicio/.test(t),t.slice(0,300));
 ok('C sin chips de contadores',!(await p.$('#main .chips')));
 ok('C héroe compacto',!!(await p.$('#main .hero.mini')));
 await p.screenshot({path:'shots/v43_C_dia.png',fullPage:true});

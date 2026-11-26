@@ -23,7 +23,7 @@ ok('contraste blanco sobre tarjeta de avance ≥ 4,5:1',hx.length>=2&&cr>=4.5,{r
 ok('sin errores paciente',!errs.length,errs);await b.close();
 // walkUp con tope senior
 const st=J(F.B);({b,p,errs}=await open(8979,{email:'ana@x.cl',state:st}));
-r=await p.evaluate(()=>{const t=S.train;t.hold=null;t.parq=Array(10).fill(false);walkUp=()=>t.plan.walk+5;todayTrain=()=>"caminata";const p0=progression;progression=()=>({state:"cap",n:3});const u=lvUp();progression=()=>({state:"keep",n:1});const u2=lvUp();progression=p0;return{u,u2}});
+r=await p.evaluate(()=>{const t=S.train;t.hold=null;t.parq=Array(10).fill(false);walkUp=()=>t.plan.walk+5;todayTrain=()=>"caminata";const p0=progression;progression=()=>({state:"cap",n:3});const u=lvUp();progression=()=>({state:"keep",n:1});t.senior=false;const u2=lvUp();progression=p0;return{u,u2}});
 ok('con fuerza en espera de autorización, el aviso aclara que es solo caminata',r.u&&/Caminata: puedes caminar más/.test(r.u.title)&&/hasta que tu kinesiólogo lo autorice/.test(r.u.why),r.u);
 ok('sin tope, el aviso normal',r.u2&&/¡Estás listo para caminar más!/.test(r.u2.title),r.u2);
 ok('sin errores',!errs.length,errs);await b.close();
