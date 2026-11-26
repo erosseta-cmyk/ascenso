@@ -7,6 +7,17 @@ let cbs=[];
 const now=()=>new Date().toISOString();
 const isPro=()=>/^kine/.test(em()||"");
 const H={
+ get_state_v3:()=>{const d=L("stub.state."+em());const o=d?{data:Object.assign({},d.data,{journal:undefined}),rev:d.rev}:{};o.sec=L("stub.secmode")||"ok";o.cache_key="AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=";return o},
+ save_state_v3:(a)=>{const d=L("stub.state."+em())||{rev:0};const j=(d.data||{}).journal||[];return H.save_state_v2({p_data:Object.assign({},a.p_data,{journal:j}),p_rev:a.p_rev})},
+ sec_status:()=>({mode:L("stub.secmode")||"ok",sensible:true,pin:true,codes:8,keys:[{id:1,label:"Teléfono de prueba",here:true}],pending:[],carers:[],events:[]}),
+ journal_list:()=>((L("stub.state."+em())||{}).data||{}).journal||[],
+ journal_add:({p_text})=>{const d=L("stub.state."+em())||{rev:0,data:{v:1}};const id="j"+Date.now();d.data.journal=[{id,at:Date.now(),text:p_text}].concat(d.data.journal||[]);d.rev++;W("stub.state."+em(),d);return{ok:true,id}},
+ journal_del:({p_id})=>{const d=L("stub.state."+em());d.data.journal=(d.data.journal||[]).filter(j=>j.id!==p_id);W("stub.state."+em(),d);return{ok:true}},
+ pro_patients_v3:()=>isPro()?(L("stub.pro")||[]):[],
+ carer_view:()=>[],
+ export_data:()=>((L("stub.state."+em())||{}).data)||{},
+ doc_new:()=>({ok:true,id:"00000000-0000-0000-0000-000000000001"}),
+ doc_open:()=>({ok:true,kind:"informe",data:Object.assign({},((L("stub.state."+em())||{}).data)||{},{journal:undefined})}),
  get_state_v2:()=>{const d=L("stub.state."+em());return d?{data:d.data,rev:d.rev}:null},
  save_state_v2:({p_data,p_rev})=>{const d=L("stub.state."+em())||{rev:0};const rev=(d.rev||0)+1;W("stub.state."+em(),{data:p_data,rev});return{ok:true,rev}},
  my_membership:()=>L("stub.member")||({active:true,pro:isPro(),is_admin:isPro(),expires_at:isPro()?null:new Date(Date.now()+20*864e5).toISOString(),trial_used:true,server_now:now(),audit:[]}),
@@ -43,5 +54,6 @@ const client={
  rpc:async(n,a)=>{try{const h=H[n];const d=h?h(a||{}):null;return{data:d,error:null}}catch(e){return{data:null,error:{message:String(e.message)}}}},
  functions:{invoke:async()=>({data:null,error:null})}
 };
+window.__fire=(e)=>cbs.forEach(f=>f(e,sess()));
 window.supabase={createClient:()=>client};
 })();
