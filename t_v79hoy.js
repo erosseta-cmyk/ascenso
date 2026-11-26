@@ -34,5 +34,5 @@ ok('#51 escalón nombra la sesión de fuerza',r.u&&r.u.act==='stepUp'&&/en mi pr
 ok('#52 senior: escalón dentro de la etapa y la etapa requiere autorización',r.u&&/dentro de tu etapa/.test(r.u.title)&&/requiere la autorización de tu kinesiólogo/.test(r.u.why),r.u);
 ok('#32 el resumen de hoy va antes de las propuestas',r.ordenOk&&/Hoy registraste fuerza/.test(r.td),r.td);
 r=await p.evaluate(()=>{tab='ajustes';view.expAsk=true;render();const e=document.querySelector('#expSum').textContent;view.expAsk=false;return e});
-ok('#55 resumen con períodos reales',/del \d{2}-\d{2}-\d{4} al \d{2}-\d{2}-\d{4}/.test(r)&&!/todo tu historial/.test(r),r.slice(0,300));
+ok('#55 resumen con períodos reales',/del \d{2}-\d{2}-\d{4} al \d{2}-\d{2}-\d{4}/.test(r)&&!/todo tu historial/.test(r)&&/días? con registros de cumplimiento, entre el/.test(r),r.slice(0,300));
 ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
