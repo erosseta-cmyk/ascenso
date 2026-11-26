@@ -24,6 +24,6 @@ r=await p.evaluate(()=>{const t=S.train;t.hold={at:today(),kind:'dolor',sid:'sx'
 ok('dolor 6: el paciente sigue pudiendo reanudar',r.has&&r.tr==='ok',r);
 r=await p.evaluate(()=>{const t=S.train;t.hold=null;t.sessions=t.sessions.filter(x=>x.id!=='sx');t.sessions.unshift({id:'p5',date:addDays(today(),-1),type:'fuerza',stage:t.stage,result:'completa',borg:4,pain:5,at:Date.now()-864e5});tab='dia';S.ui.simple=false;render();const m=document.querySelector('#main');const cam=[...m.querySelectorAll('.mission')].find(x=>/Caminar/.test(x.textContent));const u=lvUp();return{nota:cam?cam.textContent:'',walk:S.train.plan.walk,oferta:!!(u&&u.act==='walkUp'),keep:!!m.querySelector('#walkKeep'),tr:trainReady()}});
 ok('dolor 5: con el grupo 3 a 5 (sin aumento, mantener caminata)',r.tr==='ok'&&!r.oferta&&r.keep,r);
-ok('#60 misión de caminata dice lo que indica el plan',new RegExp('Por ahora, tu plan indica caminar '+r.walk+' minutos').test(r.nota),r);
+ok('#60 misión de caminata dice lo que indica el plan',new RegExp('Caminata indicada hoy: '+r.walk+' minutos').test(r.nota),r);
 r=await p.evaluate(()=>{A.legal({dataset:{k:'privacy'}});const t=document.body.textContent;view.legal=null;render();return/Responsable del tratamiento: Esteban Rosset, kinesiólogo, Registro Superintendencia de Salud N\.º 525653/.test(t)});ok('L3: responsable en Privacidad',r,r);
 ok('sin errores',!errs.length,errs);await b.close();srv.close();process.exit(require('./lib').fails?1:0)})();
