@@ -26,7 +26,7 @@ ok('B personaje sin número',!t.includes('de 16'));
 await p.screenshot({path:'shots/v43_B_dia.png',fullPage:true});
 await p.evaluate(()=>{tab='entreno';render()});await p.waitForTimeout(300);t=await p.innerText('#main');ok('B Entreno dice escalón',t.includes('escalón 1 de 3')&&!/\bpaso 1\b/.test(t),t.match(/Etapa[^\n]*/));
 await p.evaluate(()=>{tab='evolucion';render()});await p.waitForTimeout(300);t=await p.innerText('#main');ok('B Evolución sin "Nivel N"',!/Nivel \d/.test(t)&&t.includes('Por descubrir'),t.slice(0,400));
-await p.evaluate(()=>{window.progression=()=>({state:"keep",n:1});window.stepReady=()=>true;tab='dia';render()});await p.waitForTimeout(300);t=await p.innerText('#main');ok('B tarjeta subir escalón',t.includes('Subir un escalón'),t.slice(0,300));
+await p.evaluate(()=>{window.progression=()=>({state:"keep",n:1});window.stepReady=()=>true;tab='dia';render()});await p.waitForTimeout(300);t=await p.innerText('#main');ok('B tarjeta subir escalón',t.includes('Subir un escalón')||/Aplicar aumento desde (hoy|mi próxima sesión de fuerza)/.test(t),t.slice(0,300));/* texto aprobado en la ronda B2/B3 */
 ok('B sin errores',!errs.length,errs);await b.close();
 // A: usuario nuevo sin edad
 ({b,p,errs}=await open(port,{email:"a@x.cl",state:F.A}));

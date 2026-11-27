@@ -1,0 +1,245 @@
+{
+ "fn": "/tmp/pushfn/v5",
+ "mode": "v3",
+ "deno": [
+  "Listening on http://0.0.0.0:8000/ (http://localhost:8000/)"
+ ],
+ "ticks": [
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "resp": {
+    "ok": true,
+    "due": 5,
+    "sent": 5,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": [
+    {
+     "to": "Rosa",
+     "k": "m",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Rosa",
+     "k": "m",
+     "tag": "m-wk"
+    },
+    {
+     "to": "Paciente en pausa",
+     "k": "m",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Kine",
+     "k": "pro",
+     "tag": "a-pro"
+    },
+    {
+     "to": "Vence",
+     "k": "vence",
+     "tag": "a-vence"
+    }
+   ]
+  },
+  {
+   "at": "2026-11-27T10:30:40-03:00",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  },
+  {
+   "at": "2026-11-27T10:31:05-03:00",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  },
+  {
+   "at": "2026-11-27T19:00:05-03:00",
+   "resp": {
+    "ok": true,
+    "due": 1,
+    "sent": 1,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": [
+    {
+     "to": "Rosa",
+     "k": "rx",
+     "tag": "a-rx"
+    }
+   ]
+  },
+  {
+   "at": "2026-11-27T19:00:50-03:00",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  }
+ ],
+ "recv": [
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-ag",
+    "mid": "ag",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-wk",
+    "mid": "wk",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "to": "Paciente en pausa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-ag",
+    "mid": "ag",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "to": "Kine",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "a-pro",
+    "mid": null,
+    "k": "pro"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": "2026-11-27T10:30:10-03:00",
+   "to": "Vence",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "a-vence",
+    "mid": null,
+    "k": "vence"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": "2026-11-27T19:00:05-03:00",
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "a-rx",
+    "mid": null,
+    "k": "rx"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  }
+ ],
+ "unauth": 401,
+ "snooze": {
+  "ok": true
+ },
+ "vapidKeys": 2,
+ "push_log": [
+  {
+   "mission_id": "ag",
+   "n": 2
+  },
+  {
+   "mission_id": "alert:s7",
+   "n": 1
+  },
+  {
+   "mission_id": "omit:wk",
+   "n": 1
+  },
+  {
+   "mission_id": "rx",
+   "n": 1
+  },
+  {
+   "mission_id": "vence:202611281500",
+   "n": 1
+  },
+  {
+   "mission_id": "wk",
+   "n": 1
+  }
+ ],
+ "rest": [
+  "GET /rest/v1/push_config",
+  "POST /rest/v1/push_config",
+  "POST /rest/v1/rpc/push_due_v3",
+  "GET /rest/v1/push_subs",
+  "HEAD /rest/v1/push_snooze",
+  "POST /rest/v1/push_snooze"
+ ]
+}

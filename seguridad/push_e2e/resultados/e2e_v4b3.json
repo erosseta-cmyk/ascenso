@@ -1,0 +1,187 @@
+{
+ "fn": "/tmp/pushfn/v4b3",
+ "mode": "v2",
+ "deno": [
+  "Listening on http://0.0.0.0:8000/ (http://localhost:8000/)"
+ ],
+ "ticks": [
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 5,
+    "sent": 5,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": [
+    {
+     "to": "Rosa",
+     "k": "m",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Rosa",
+     "k": "m",
+     "tag": "m-wk"
+    },
+    {
+     "to": "Paciente en pausa",
+     "k": "m",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Paciente en pausa",
+     "k": "m",
+     "tag": "m-wk"
+    },
+    {
+     "to": "Kine",
+     "k": "pro",
+     "tag": "a-pro"
+    }
+   ]
+  },
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  },
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  }
+ ],
+ "recv": [
+  {
+   "at": null,
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-ag",
+    "mid": "ag",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-wk",
+    "mid": "wk",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Paciente en pausa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-ag",
+    "mid": "ag",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Paciente en pausa",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "m-wk",
+    "mid": "wk",
+    "k": "m"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Kine",
+   "payload": {
+    "title": "Ascenso",
+    "body": "Tienes un recordatorio de Ascenso",
+    "tag": "a-pro",
+    "mid": null,
+    "k": "pro"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  }
+ ],
+ "unauth": 401,
+ "snooze": {
+  "ok": true
+ },
+ "vapidKeys": 2,
+ "push_log": [
+  {
+   "mission_id": "ag",
+   "n": 2
+  },
+  {
+   "mission_id": "alert:s7",
+   "n": 1
+  },
+  {
+   "mission_id": "wk",
+   "n": 2
+  }
+ ],
+ "rest": [
+  "GET /rest/v1/push_config",
+  "POST /rest/v1/push_config",
+  "POST /rest/v1/rpc/push_due_v2",
+  "GET /rest/v1/push_subs",
+  "HEAD /rest/v1/push_snooze",
+  "POST /rest/v1/push_snooze"
+ ]
+}

@@ -1,0 +1,176 @@
+{
+ "fn": "/tmp/pushfn/v4",
+ "mode": "v2",
+ "deno": [
+  "Listening on http://0.0.0.0:8000/ (http://localhost:8000/)"
+ ],
+ "ticks": [
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 5,
+    "sent": 5,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": [
+    {
+     "to": "Rosa",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Rosa",
+     "tag": "m-wk"
+    },
+    {
+     "to": "Paciente en pausa",
+     "tag": "m-ag"
+    },
+    {
+     "to": "Paciente en pausa",
+     "tag": "m-wk"
+    },
+    {
+     "to": "Kine",
+     "tag": "pro-alert"
+    }
+   ]
+  },
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  },
+  {
+   "at": "hora real",
+   "resp": {
+    "ok": true,
+    "due": 0,
+    "sent": 0,
+    "failed": 0,
+    "removed": 0
+   },
+   "recibidos": []
+  }
+ ],
+ "recv": [
+  {
+   "at": null,
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso · es la hora",
+    "body": "Tomar agua",
+    "tag": "m-ag",
+    "mid": "ag"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Rosa",
+   "payload": {
+    "title": "Ascenso · es la hora",
+    "body": "Caminar 20 minutos",
+    "tag": "m-wk",
+    "mid": "wk"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Paciente en pausa",
+   "payload": {
+    "title": "Ascenso · es la hora",
+    "body": "Tomar agua",
+    "tag": "m-ag",
+    "mid": "ag"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Paciente en pausa",
+   "payload": {
+    "title": "Ascenso · es la hora",
+    "body": "Caminar 20 minutos",
+    "tag": "m-wk",
+    "mid": "wk"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  },
+  {
+   "at": null,
+   "to": "Kine",
+   "payload": {
+    "title": "Ascenso · revisa a un paciente",
+    "body": "Alguien que comparte su avance contigo registró dolor o una alerta y su plan quedó en pausa. Abre la pestaña Pacientes.",
+    "tag": "pro-alert"
+   },
+   "err": null,
+   "headers": {
+    "auth": true,
+    "enc": "aes128gcm",
+    "ttl": "600",
+    "urgency": "high"
+   }
+  }
+ ],
+ "unauth": 401,
+ "snooze": {
+  "ok": true
+ },
+ "vapidKeys": 2,
+ "push_log": [
+  {
+   "mission_id": "ag",
+   "n": 2
+  },
+  {
+   "mission_id": "alert:s7",
+   "n": 1
+  },
+  {
+   "mission_id": "wk",
+   "n": 2
+  }
+ ],
+ "rest": [
+  "GET /rest/v1/push_config",
+  "POST /rest/v1/push_config",
+  "POST /rest/v1/rpc/push_due_v2",
+  "GET /rest/v1/push_subs",
+  "HEAD /rest/v1/push_snooze",
+  "POST /rest/v1/push_snooze"
+ ]
+}

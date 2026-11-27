@@ -59,7 +59,7 @@ const gen=rs=>rs.every(r=>r.title==='Ascenso'&&r.body==='Tienes un recordatorio 
   tab('Caminata pospuesta 10 min; en ese lapso el plan entra en pausa (dolor 7)','Se omite al vencer el «posponer»',`Avisos al vencer: ${ids(r)||'ninguno'} (caminata omitida)`,'Servidor simulado (PGlite)')}
  {const db=await mk();const u=await user(db,'Rosa',base([mis('wk','Caminar 20 minutos','10:30')]));
   await db.query("update public.app_state set data = jsonb_set(jsonb_set(data,'{train,hold}','{\"kind\":\"sintomas\",\"sid\":\"s9\"}'),'{train,sessions}','[{\"id\":\"s9\",\"alert\":true,\"pain\":1,\"date\":\"2026-11-27\"}]') where user_id=$1",[u]);
-  const r=await due(db,T('10:30'));const lg=(await db.query("select count(*)::int n from public.push_log")).rows[0].n;ok('Fila 5b: programada 10:30, pausa a las 10:20 → a las 10:30 no se envía ni se registra como enviada',ids(r)===''&&lg===0,{r,lg});
+  const r=await due(db,T('10:30'));const lg=(await db.query("select string_agg(mission_id,',') s from public.push_log")).rows[0].s;ok('Fila 5b: programada 10:30, pausa a las 10:20 → a las 10:30 no se envía; queda marcado como omitido',ids(r)===''&&lg==='omit:wk',{r,lg});
   tab('Caminata programada 10:30; pausa por síntomas a las 10:20','Sin aviso a las 10:30',`Avisos: ${ids(r)||'ninguno'}`,'Servidor simulado (PGlite)')}
  {const db=await mk();const d=base([mis('wk','Caminar 20 minutos','10:00')]);d.done={'2026-11-27':{wk:1}};const u=await user(db,'Rosa',d);await db.query("insert into public.push_snooze(user_id,mission_id,fire_at) values($1,'wk',$2::timestamptz - interval '1 minute')",[u,T('10:20')]);
   const r=await due(db,T('10:20'));ok('Fila 5c: pospuesto pero ya marcado como hecho → no se envía',ids(r)==='',r)}
