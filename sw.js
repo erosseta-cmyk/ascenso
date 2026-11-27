@@ -6,8 +6,14 @@ self.addEventListener("fetch",function(e){var r=e.request;if(r.method!=="GET")re
  if(page){e.respondWith(fetch(r,{cache:"no-store"}).then(function(res){if(res&&res.ok){var cp=res.clone();caches.open(V).then(function(c){c.put(r.mode==="navigate"?"./":r,cp)})}return res}).catch(function(){return caches.match(r.mode==="navigate"?"./":r,{ignoreSearch:true}).then(function(m){return m||caches.match("./")})}));return}
  if(/\.(jpg|png)$/.test(u.pathname)){e.respondWith(caches.match(r).then(function(m){return m||fetch(r).then(function(res){if(res&&res.ok){var cp=res.clone();caches.open(V).then(function(c){c.put(r,cp)})}return res})}));return}});
 var FN="https://gtwqhrmobusntfsqebdc.supabase.co/functions/v1/push-tick";
+/* B3: lo que se ve fuera de la app (incluida la pantalla bloqueada) nunca lleva el nombre del hábito, la dosis, el dolor ni datos del paciente,
+   aunque el servidor envíe otro texto. El detalle se muestra dentro de Ascenso, según el perfil y el estado actual. */
+var NT="Ascenso",NB="Tienes un recordatorio de Ascenso";
+function kindOf(d){if(d.mid)return"m";var t=String(d.k||d.tag||"");return /rx/.test(t)?"rx":/vence/.test(t)?"vence":/pro/.test(t)?"pro":"x"}
 self.addEventListener("push",function(e){var d={};try{d=e.data?e.data.json():{}}catch(x){}
- e.waitUntil(self.registration.showNotification(d.title||"Ascenso",{body:d.body||"Tienes una misión pendiente",tag:d.tag||"ascenso",icon:"icon-192.png",badge:"icon-192.png",renotify:true,requireInteraction:true,vibrate:[300,150,300,150,300],data:{mid:d.mid||null},actions:d.mid?[{action:"snooze",title:"Posponer 10 min"},{action:"open",title:"Abrir"}]:[]}))});
+ var mid=typeof d.mid==="string"?d.mid.slice(0,80):null,k=kindOf(d);
+ e.waitUntil(self.registration.showNotification(NT,{body:NB,tag:mid?"m-"+mid:"a-"+k,icon:"icon-192.png",badge:"icon-192.png",renotify:true,requireInteraction:true,vibrate:[300,150,300,150,300],data:{mid:mid,k:k},actions:mid?[{action:"snooze",title:"Posponer 10 min"},{action:"open",title:"Abrir"}]:[]}))});
 self.addEventListener("notificationclick",function(e){var n=e.notification;n.close();var mid=n.data&&n.data.mid;
  if(e.action==="snooze"&&mid){e.waitUntil(self.registration.pushManager.getSubscription().then(function(s){return s?fetch(FN,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"snooze",endpoint:s.endpoint,mission_id:mid})}):null}).catch(function(){}));return}
- e.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(function(cs){for(var k=0;k<cs.length;k++){if("focus" in cs[k])return cs[k].focus()}return self.clients.openWindow("./")}))});
+ var av=mid?"m:"+mid:(n.data&&n.data.k)||"x";
+ e.waitUntil(self.clients.matchAll({type:"window",includeUncontrolled:true}).then(function(cs){for(var k=0;k<cs.length;k++){if("focus" in cs[k]){try{cs[k].postMessage({t:"aviso",v:av})}catch(x){}return cs[k].focus()}}return self.clients.openWindow("./?aviso="+encodeURIComponent(av))}))});
