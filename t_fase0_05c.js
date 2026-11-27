@@ -1,6 +1,6 @@
 // Fase 0 (solo lectura del producto): recorrido 05c y estados vecinos en la copia v79, con servidor simulado y datos ficticios.
 const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>JSON.parse(JSON.stringify(o));
-(async()=>{const srv=await serve(8988);const st=J(F.B);let {b,p,errs}=await open(8988,{email:'rosa@prueba.cl',state:st});
+(async()=>{const srv=await serve(8988);const st=J(F.B);let {b,p,errs}=await open(8988,{email:'rosa@prueba.cl',state:st,clock:'2026-11-26T12:00:00-03:00'})/* fecha fija (jueves): el caso se escribió para un día de caminata */;
  const ev=f=>p.evaluate(f);const W=ms=>p.waitForTimeout(ms||300);
  // Estado 05c: ayer fuerza con dolor 3; caminata indicada 15; hábito «Caminar 20 minutos» con duración 20 y hora 08:00
  await ev(()=>{view.evo=null;S.seenStage=99;const t=S.train;t.hold=null;t.parq=Array(10).fill(false);t.sessions=t.sessions.filter(x=>x.date!==today());SH.mine=[];S.ui=S.ui||{};S.ui.simple=false;
@@ -40,5 +40,5 @@ const {serve,open,ok}=require('./lib');const F=require('./fixtures');const J=o=>
  // Alarma de un hábito en pausa (pausa por dolor 6)
  await ev(()=>{const t=S.train;t.sessions=t.sessions.filter(s=>s.date!==today());const s={id:'p6',date:today(),type:'caminata',stage:t.stage,result:'parcial',borg:5,pain:6,at:Date.now(),xp:25};t.sessions.unshift(s);t.hold={at:today(),kind:'dolor',sid:'p6'};render()});
  r=await ev(()=>{const m=S.missions.find(x=>x.id==='mc');const pausada=mPaused(m,today());AL.on=true;alCur=null;AL.fired={};const d=new Date();m.time=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');alCheck();const box=document.querySelector('#alarmBox');const vis=box&&!box.hidden;const t=vis?box.innerText:'';alStop&&alStop();m.time='08:00';return{pausada,vis,t}});
- ok('R13 (hallazgo) la alarma suena para un hábito físico en pausa',r.pausada&&r.vis,r);
+ ok('R13 (corregido en B2) la alarma ya no suena para un hábito físico en pausa',r.pausada&&!r.vis,r);
  console.log('errores',JSON.stringify(errs));await b.close();srv.close();process.exit(0)})();

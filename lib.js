@@ -2,7 +2,7 @@ const http=require('http'),fs=require('fs'),path=require('path');const {chromium
 const ROOT=process.env.SITE;
 function serve(port){return new Promise(r=>{const s=http.createServer((q,res)=>{let u=decodeURIComponent(q.url.split('?')[0]);if(u==='/')u='/index.html';
  if(u==='/supabase.js'){res.writeHead(200,{'content-type':'text/javascript'});return res.end(fs.readFileSync(__dirname+'/stub.js'))}
- if(u==='/sw.js'){res.writeHead(404);return res.end()}
+ if(u==='/sw.js'&&!process.env.ALLOW_SW){res.writeHead(404);return res.end()}
  const f=path.join(ROOT,u);if(!f.startsWith(ROOT)||!fs.existsSync(f)){res.writeHead(404);return res.end()}
  const ext=path.extname(f).slice(1);res.writeHead(200,{'content-type':{html:'text/html',js:'text/javascript',jpg:'image/jpeg',png:'image/png',json:'application/json',webmanifest:'application/json'}[ext]||'application/octet-stream'});res.end(fs.readFileSync(f))}).listen(port,()=>r(s))})}
 async function open(port,{email,state,mine,rv,pro,adm,ct,member,width=390,path='',clock}={}){const b=await chromium.launch();const ctx=await b.newContext({viewport:{width,height:844},deviceScaleFactor:1,timezoneId:'America/Santiago'});if(clock)await ctx.clock.install({time:new Date(clock)});
