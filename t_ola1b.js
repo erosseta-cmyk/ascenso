@@ -31,7 +31,7 @@ const prep05c=()=>{view.evo=null;S.seenStage=99;const t=S.train;t.hold=null;t.pa
   else{ok2(`${n}: el botón dice «Usar 20 minutos desde la próxima caminata»`,r.txt==='Usar 20 minutos desde la próxima caminata',r.txt);
    ok2(`${n}: la sesión ya guardada no cambia`,r.s0===r.s1&&r.s0!=='null',r);
    ok2(`${n}: Mi día muestra la próxima sesión (caminata de 20 min, o fuerza si toca) y el aviso confirma la próxima caminata de 20`,(/caminata de 20 minutos/.test(r.dia)||/Próxima: mañana, fuerza/.test(r.dia))&&/próxima caminata será de 20 minutos/.test(r.toastT),r);
-   ok2(`${n}: (hallazgo) Entreno describe «hoy» con la dosis nueva aunque la caminata de hoy ya se registró`,/Camina 20 minutos/.test(r.ent)&&r.sd,r)}
+   ok2(`${n}: (corregido en Ola 1c) Entreno ya no describe «hoy» con la dosis nueva cuando la caminata de hoy está registrada`,r.ent===''&&r.walk===20&&r.s0===r.s1,r)}
   ok2(`${n}: no vuelve a ofrecer otro aumento de inmediato`,r.reofrece===0,r.reofrece);await b.close()}
  // ---------- 3) Edad ----------
  {const {b,p}=await open(8999,{email:'x@prueba.cl',state:(()=>{const s=J(F.A);delete s.profile.birthY;delete s.profile.birthM;return s})()});

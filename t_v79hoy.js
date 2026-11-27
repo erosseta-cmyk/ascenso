@@ -21,7 +21,7 @@ ok('fila 6 · Hoy: «Tu sesión de hoy ya está registrada» y próxima',/Tu ses
 ok('fila 6 · sin «Hoy toca» cuando ya registró',!/Hoy toca/.test(r.main));
 ok('fila 6 · aumento «desde la próxima caminata»',!r.lv||/desde la próxima caminata/.test(r.lv),r.lv);
 r=await p.evaluate(()=>{tab='entreno';render();return document.querySelector('#main').textContent});
-ok('fila 6 · Entreno: registrada + próxima',/Tu sesión de hoy ya está registrada.*Próxima: mañana/.test(r));
+ok('fila 6 · Entreno: registrada + próxima (Ola 1c: con caminata registrada, «Caminata de hoy registrada · …» y «Próxima caminata»)',/Tu sesión de hoy ya está registrada.*Próxima: mañana/.test(r)||/Caminata de hoy registrada · (Completa|Parcial).*Próxima caminata: \d+ minutos/.test(r));
 r=await p.evaluate(()=>{S.ui.simple=true;render();return document.querySelector('#main').textContent});
 ok('fila 6 · modo simple: registrada + próxima + líneas senior',/Tu sesión de hoy ya está registrada/.test(r)&&/Próxima: mañana/.test(r)&&/Caminata indicada/.test(r),r.slice(0,300));
 r=await p.evaluate(()=>{S.ui.simple=false;S.train.senior=false;S.train.sessions=S.train.sessions.filter(x=>x.id!=='hoy');tab='dia';render();return{cap:!!document.querySelector('#capLines'),main:document.querySelector('#main').textContent}});

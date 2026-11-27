@@ -57,7 +57,7 @@ const first=()=>{const m=document.querySelector('#main');const e=m.firstElementC
  await run('Sesión ya registrada','B',{walk:15,dur:20,pain:1,hoy:true,q:false,dayType:'caminata'},null,async(p,n)=>{
   let r=await p.evaluate(()=>{const e=document.querySelector('#main').firstElementChild;return{id:e.id,hc:!!document.querySelector('#hoyCaminata')}});
   ok2(`${n} A1 lo primero es «Tu sesión de hoy ya está registrada»`,r.id==='todoDone'&&!r.hc,r);
-  r=await p.evaluate(()=>{tab='entreno';render();const m=document.querySelector('#main');return{sd:!!m.querySelector('#sdTop'),reg:!!m.querySelector('[data-act=openLog]'),corr:!!m.querySelector('[data-act=delToday]')}});
+  r=await p.evaluate(()=>{tab='entreno';render();const m=document.querySelector('#main');return{sd:!!m.querySelector('#sdTop')||!!m.querySelector('#hoyRegistrada'),reg:!!m.querySelector('[data-act=openLog]'),corr:!!m.querySelector('[data-act=delToday]'),instr:/Camina \d+ minutos/.test(m.innerText)}});
   ok2(`${n} A4 Entreno muestra el resultado, sin invitar a registrar de nuevo, con corrección`,r.sd&&!r.reg&&r.corr,r);});
  // 5) Progresión disponible: hoy antes del aumento
  await run('Progresión disponible','B',{walk:15,dur:20,q:false,dayType:'caminata'},null,async(p,n)=>{
