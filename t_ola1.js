@@ -81,7 +81,7 @@ const first=()=>{const m=document.querySelector('#main');const e=m.firstElementC
  // 8) Sin año válido: se conserva la opción de elegir
  await run('Sin año de nacimiento','A',{q:true,noYear:true},null,async(p,n)=>{
   const r=await p.evaluate(()=>({t:document.querySelector('#main').innerText.slice(0,200)}));
-  ok2(`${n} sin año: se pide el año como siempre (sin cambios)`,/fecha de nacimiento/i.test(r.t),r.t);});
+  ok2(`${n} sin año: se pide el año como siempre (sin cambios)`,/Ingresa tu año y mes de nacimiento/.test(r.t),r.t);});/* texto de edad actualizado en Ola 1d */
  await run('Año no válido (1890)','A',{q:true},null,async(p,n)=>{
   const r=await p.evaluate(()=>{S.profile.birthY=1890;S.profile.birthM=1;delete S.profile.ageR;delete S.profile.age60;render();return{t:(document.querySelector('#pendientes')||{textContent:''}).textContent,k:ageKnown()}});
   ok2(`${n} B1 con un año no válido se conserva la opción de elegir la edad`,r.k===null&&/rango de edad/.test(r.t),r);});

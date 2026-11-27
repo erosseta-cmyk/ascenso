@@ -36,7 +36,7 @@ const prep05c=()=>{view.evo=null;S.seenStage=99;const t=S.train;t.hold=null;t.pa
  // ---------- 3) Edad ----------
  {const {b,p}=await open(8999,{email:'x@prueba.cl',state:(()=>{const s=J(F.A);delete s.profile.birthY;delete s.profile.birthM;return s})()});
   const t=await p.evaluate(()=>{view.evo=null;render();return document.querySelector('#main').innerText});
-  ok2('Edad: el aviso dice para qué se usa (18 años o más e imágenes), sin prometer adaptar el plan',/confirmar que tienes 18 años o más/.test(t)&&/ejercicios con personas de tu edad/.test(t)&&!/adaptamos tu plan/.test(t),t.slice(0,300));await b.close()}
+  ok2('Edad: el aviso dice para qué se usa (18 años o más e imágenes), sin prometer adaptar el plan',/revisar si puedes usar Ascenso/.test(t)&&/elegir las imágenes de los ejercicios/.test(t)&&!/adapta/.test(t)/* texto aprobado en Ola 1d */,t.slice(0,300));await b.close()}
  {const {b,p}=await open(8999,{email:'x@prueba.cl',state:J(F.B)});
   const r=await p.evaluate(()=>{const out={};for(const y of [1950,1998]){S.profile.birthY=y;S.profile.birthM=1;delete S.profile.age60;delete S.profile.ageR;S.train.plan=null;S.train.senior=false;tab='entreno';render();const ch=document.querySelector('#pSenior');out[y]={senior:S.train.senior,marcado:ch?ch.checked:null,joven:libYoung(),cap:seniorCap()}}
    S.profile.birthY=1950;S.profile.age60=false;out.eleccion=libYoung();return out});
