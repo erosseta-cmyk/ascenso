@@ -9,7 +9,7 @@ var FN="https://gtwqhrmobusntfsqebdc.supabase.co/functions/v1/push-tick";
 /* B3: lo que se ve fuera de la app (incluida la pantalla bloqueada) nunca lleva el nombre del hábito, la dosis, el dolor ni datos del paciente,
    aunque el servidor envíe otro texto. El detalle se muestra dentro de Ascenso, según el perfil y el estado actual. */
 var NT="Ascenso",NB="Tienes un recordatorio de Ascenso";
-function kindOf(d){if(d.mid)return"m";var t=String(d.k||d.tag||"");return /rx/.test(t)?"rx":/vence/.test(t)?"vence":/pro/.test(t)?"pro":"x"}
+function kindOf(d){if(d.mid)return"m";if(/^(rx|vence|pro)$/.test(String(d.k||"")))return d.k;var t=String(d.title||"");/* servidor anterior: sin «k», se deduce del título (que nunca se muestra) */return /paciente/i.test(t)?"pro":/vence/i.test(t)?"vence":/ejercicios/i.test(t)?"rx":/pro-alert/.test(String(d.tag||""))?"pro":"x"}
 self.addEventListener("push",function(e){var d={};try{d=e.data?e.data.json():{}}catch(x){}
  var mid=typeof d.mid==="string"?d.mid.slice(0,80):null,k=kindOf(d);
  e.waitUntil(self.registration.showNotification(NT,{body:NB,tag:mid?"m-"+mid:"a-"+k,icon:"icon-192.png",badge:"icon-192.png",renotify:true,requireInteraction:true,vibrate:[300,150,300,150,300],data:{mid:mid,k:k},actions:mid?[{action:"snooze",title:"Posponer 10 min"},{action:"open",title:"Abrir"}]:[]}))});

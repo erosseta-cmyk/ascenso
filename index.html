@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-YjsDLLUVkLbsfHEgfA0ivFxTqAROuc3HRFjYSSO9QAo=' 'sha256-58rgIriI/4hR42ARECES5xNfdzwvt6AGMGjEymiTrHo=' 'sha256-5m2u4pl+QQ/JE5w8ukPTJ/in6Wfsb5JmjLwGXVXoulQ=' 'sha256-x6Jjqo12cp5KPEwhwsD15s6v7TK37973w38eJjFjN10='; object-src 'none'; base-uri 'self'">
+<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-S5psFlize5ZbkPRR8CREsMfEj92JEvB9BVms+5fFr+M=' 'sha256-58rgIriI/4hR42ARECES5xNfdzwvt6AGMGjEymiTrHo=' 'sha256-5m2u4pl+QQ/JE5w8ukPTJ/in6Wfsb5JmjLwGXVXoulQ=' 'sha256-x6Jjqo12cp5KPEwhwsD15s6v7TK37973w38eJjFjN10='; object-src 'none'; base-uri 'self'">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0b0f17">
 <link rel="manifest" href="manifest.webmanifest">
@@ -257,6 +257,7 @@ body.nomo .lvarr{animation:none}
 .lvt{font-size:22px;font-weight:800;margin-top:6px}
 .lvbig{font-size:30px;font-weight:900;margin-top:4px;letter-spacing:.5px}
 .lvwhy{font-size:16px;margin-top:6px;opacity:.95}
+.lvlh{margin:12px 0 4px;font-weight:700;text-align:left}.lvlist{text-align:left;margin:0;padding-left:20px;font-size:16px;line-height:1.45}.lvlist b{white-space:nowrap}
 .lvbtn{width:100%;min-height:58px;margin-top:14px;font-size:19px;font-weight:800;background:#fff!important;color:#7a1f3d!important;border:0!important}
 .lvbtn{display:flex;align-items:center;justify-content:center}
 .lvno{color:#fff!important;display:block;margin:10px auto 0;opacity:.9}
@@ -423,12 +424,14 @@ function toast(t){const el=$("#toast");el.textContent=t;try{const tb=$("#tabs"),
 function totalXP(){let x=0;for(const d in S.done)for(const m in S.done[d])x+=S.done[d][m];for(const s of S.train.sessions)x+=s.xp||0;return x}
 function stageIdx(xp){let i=0;XP_STEPS.forEach((v,k)=>{if(xp>=v)i=k});return i}
 function scheduled(m,day){if(m.archived&&m.archived<=day)return false;if(m.created>day)return false;return m.days.includes(pdate(day).getDay())}
-const PHYS_RE=/camin|trot|\bcorr(er|o|e)\b|bici|\bnad(ar|o)\b|ejercic|fuerza|sentadill|yoga|pilates|elong|estir|bail|gimnas|pesas|escaler|deport|entren|pausa activa|plancha|flexi[oó]n|rutina de ascenso/i;
+const PHYS_RE=/camin|trot|\bcorr(er|o|e)\b|bici|\bnad(ar|o)\b|ejercic|fuerza|sentadill|yoga|pilates|elong|estir|bail|gimnas|pesas|escaler|deport|entren|pausa activa|plancha|flexi[oó]n/i;
 function isPhys(m){return PHYS_RE.test(String(m&&m.name||""))}
 function planPaused(){if(!S.onboard||!S.onboard.health||!S.train)return false;const tr=trainReady();return tr==="paused"||tr==="hold"}
 /* B2: estado vigente de cada actividad al emitir un aviso. Con las reglas actuales, la pausa es del plan completo: alcanza a fuerza, caminata, otros hábitos físicos y la pauta del kinesiólogo; un hábito no físico (por ejemplo, tomar agua) nunca queda en pausa. */
-const STR_RE=/fuerza|sentadill|pesas|plancha|flexi[oó]n|gimnas|entren|rutina de ascenso/i,WALK_RE=/camin|trot|\bcorr(er|o|e)\b/i;
-function actOf(m){const n=String(m&&m.name||"");if(!isPhys(m))return"otro";if(WALK_RE.test(n))return"caminata";if(STR_RE.test(n))return"fuerza";return"fisico"}
+/* «Hacer mi rutina de Ascenso» es el hábito físico predefinido del catálogo (sin otra marca: se reconoce por su nombre exacto, también en cuentas antiguas). Se silencia y se muestra en pausa con el plan, pero NO cambia el cálculo de rachas, que sigue usando isPhys() sin esta regla. */
+function isAscRoutine(m){return String(m&&m.name||"").trim().toLowerCase()==="hacer mi rutina de ascenso"}
+const STR_RE=/fuerza|sentadill|pesas|plancha|flexi[oó]n|gimnas|entren/i,WALK_RE=/camin|trot|\bcorr(er|o|e)\b/i;
+function actOf(m){const n=String(m&&m.name||"");if(isAscRoutine(m))return"fuerza";if(!isPhys(m))return"otro";if(WALK_RE.test(n))return"caminata";if(STR_RE.test(n))return"fuerza";return"fisico"}
 function pausedActs(){return planPaused()?["fuerza","caminata","fisico","rx"]:[]}
 function actPaused(k){return k!=="otro"&&pausedActs().includes(k)}
 function mPaused(m,d){return d===today()&&actPaused(actOf(m))}
@@ -1116,7 +1119,12 @@ function alShow(title,sub,id,o){o=o||{};const el=$("#alarmBox");if(!el)return;co
 function alWalkInfo(m){const w=walkHab();return w&&w.id===m.id&&todayTrain()==="caminata"?{plan:+S.train.plan.walk,meta:+m.dur}:null}
 function alMission(m,silent){alShow(m.name,(m.time||"")+" · "+m.cat+" · "+m.xp+" XP",m.id,{silent,walk:alWalkInfo(m)})}
 function alFire(m){alCur=m.id;const d=today();AL.fired[d]=AL.fired[d]||{};AL.fired[d][m.id]=Date.now();for(const k in AL.fired)if(k!==d)delete AL.fired[k];delete AL.snooze[m.id];alSave();alMission(m,false);alNotify("m-"+m.id,m.id)}
-function alCheck(){try{if(!AL.on||!S.onboard||alCur)return;const d=today(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),done=S.done[d]||{},fired=AL.fired[d]||{};for(const m of dayMissions(d)){if(!m.time||done[m.id]||m.archived)continue;const sn=AL.snooze[m.id];if(sn){if(sn.d!==d){delete AL.snooze[m.id];alSave()}else{if(Date.now()>=sn.at){if(mPaused(m,d)){delete AL.snooze[m.id];alSave();continue}return alFire(m)}continue}}if(mPaused(m,d))continue;if(fired[m.id])continue;const[h,mi]=m.time.split(":").map(Number),t=h*60+mi;if(nm>=t&&nm-t<=15)return alFire(m)}}catch(e){}}
+/* B2: un aviso cuya hora (o cuyo «posponer») venció durante una pausa se omite y no se recupera al levantarse la pausa; sigue la próxima ocurrencia. */
+function pauseStartNow(){const t=S.train,tr=trainReady();if(tr==="hold"&&t.hold){const hs=t.sessions.find(x=>x.id===t.hold.sid);return hs&&hs.at?+hs.at:0}if(tr==="paused")return +t.parqTs||0;return null}
+function pausedAt(ts){if(!S.onboard||!S.onboard.health||!S.train)return false;const t=S.train;if(planPaused()){const st=pauseStartNow();if(st===null||st<=ts)return true}
+ if((t.sessions||[]).some(x=>x&&x.paused&&+x.resumedAt>ts&&(+x.at||0)<=ts))return true;
+ const c=t.clearSrv&&t.clearSrv.parq;if(c&&Array.isArray(t.parq)&&t.parq.some(Boolean)&&+t.parqTs&&+t.parqTs<=ts&&Date.parse(c.at)>ts)return true;return false}
+function alCheck(){try{if(!AL.on||!S.onboard||alCur)return;const d=today(),now=new Date(),nm=now.getHours()*60+now.getMinutes(),done=S.done[d]||{},fired=AL.fired[d]||{};for(const m of dayMissions(d)){if(!m.time||done[m.id]||m.archived)continue;const ph=actOf(m)!=="otro";const sn=AL.snooze[m.id];if(sn){if(sn.d!==d){delete AL.snooze[m.id];alSave()}else{if(Date.now()>=sn.at){if(mPaused(m,d)||(ph&&pausedAt(sn.at))){delete AL.snooze[m.id];alSave();continue}return alFire(m)}continue}}if(fired[m.id])continue;const[h,mi]=m.time.split(":").map(Number),t=h*60+mi;if(nm>=t&&nm-t<=15){const T=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,mi).getTime();if(mPaused(m,d)||(ph&&pausedAt(T))){AL.fired[d]=AL.fired[d]||{};AL.fired[d][m.id]="omitido";alSave();continue}return alFire(m)}}}catch(e){}}
 setInterval(alCheck,15000);let dayNow=today();setInterval(()=>{if(today()!==dayNow){dayNow=today();if(!view.form&&!view.log)render()}},30000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")alCheck()});
 var NOTIF_PEND=null;try{const q=new URLSearchParams(location.search),v=q.get("aviso");if(v){NOTIF_PEND=v.slice(0,90);q.delete("aviso");const r=q.toString();history.replaceState(null,"",location.pathname+(r?"?"+r:"")+location.hash)}}catch(e){}
 try{navigator.serviceWorker&&navigator.serviceWorker.addEventListener("message",e=>{const x=e.data||{};if(x.t==="aviso"){NOTIF_PEND=String(x.v||"").slice(0,90)||"x";notifOpen()}})}catch(e){}
@@ -1384,10 +1392,13 @@ function rxQuick(it,key,on,adv){const id=it.ex,e=id&&(EX[id]||LIB[id]),pg=id&&LI
  return`<div class="rxq">${e?rxPic(id,lvC):""}${it.dose?`<div class="rxdose">${esc(it.dose)}</div>`:""}${it.note?`<p class="rxnote"><b>${LIB[id]&&LIB[id].load?"Carga autorizada":"Tu kine"}:</b> ${esc(it.note)}</p>`:""}${pg&&it.c0?`<p class="rxnote"><b>Carga:</b> ${esc(progC(pg,it.c0))}</p>`:""}${e?`<ol class="rxsteps">${e.how.map(h=>`<li>${h}</li>`).join("")}</ol><p class="rxcare">⚠️ ${e.care}</p>`:""}${pg?ldBlock(id,key,it):""}${adv?`<button class="btn tap${on?"":" pri"} rxdone" data-act="rxTick" data-k="${esc(rxKey(it))}" data-adv="1" aria-pressed="${on}">${on?"✓ Hecho · desmarcar":"✓ Listo, lo hice"}</button>`:""}${e?exReview(id):""}</div>`}
 function lvUp(){if(trainReady()!=="ok"||view.log)return null;const t=S.train,pr=progression(),sdn=!!sessionToday();
  if(pr.state==="advance")return{act:"stageUp",title:`¡Estás listo para la etapa ${t.stage+1}!`,big:`Etapa ${t.stage} → ${t.stage+1}`,why:`${NEED} sesiones completas, sin dolor`,btn:sdn?`Usar la etapa ${t.stage+1} desde la próxima sesión de fuerza`:`Pasar a la etapa ${t.stage+1}`};
- if(pr.state!=="hold"&&stepReady()){const sc=seniorCap();return{act:"stepUp",title:sc?`Puedes ajustar las repeticiones dentro de tu etapa ${t.stage}`:"¡Estás listo para subir un escalón!",big:`Escalón ${(t.lvl||0)} → ${(t.lvl||0)+1}`,why:"2 sesiones seguidas completas, sin dolor"+(sc?`. Pasar a la etapa ${t.stage+1} requiere la autorización de tu kinesiólogo`:""),btn:sdn?"Usar 2 repeticiones más en mi próxima sesión de fuerza":"Subir un escalón (+2 repeticiones)"}}
+ if(pr.state!=="hold"&&stepReady()){const sc=seniorCap(),L=t.lvl||0,st=STAGES[t.stage-1][1],hoy=todayTrain()==="fuerza"&&!sessionToday(),seg=st.some(([,d])=>/^\d+×\d+ s/.test(String(d))),rep=st.some(([,d])=>/^\d+×\d+(?!\d| s)/.test(String(d)));
+  const list=`<ul class="lvlist" id="lvCambio">${st.map(([id,d,alt])=>{const a=doseAt(d,L),z=doseAt(d,L+1);return`<li>${esc(alt||EX[id].n)}: ${esc(a)} → <b>${esc(z)}</b></li>`}).join("")}</ul>`;
+  const btn=rep&&seg?(hoy?"Aplicar aumento desde hoy":"Aplicar aumento desde mi próxima sesión de fuerza"):rep?(hoy?"Subir un escalón (+2 repeticiones)":"Usar 2 repeticiones más en mi próxima sesión de fuerza"):(hoy?"Subir un escalón (+5 segundos)":"Usar 5 segundos más en mi próxima sesión de fuerza");
+  return{act:"stepUp",title:sc?`Puedes ajustar las repeticiones dentro de tu etapa ${t.stage}`:"¡Estás listo para subir un escalón!",big:`Escalón ${L} → ${L+1}`,why:"2 sesiones seguidas completas, sin dolor"+(sc?`. Pasar a la etapa ${t.stage+1} requiere la autorización de tu kinesiólogo`:""),list,btn}}
  const wu=walkUp();if(wu&&todayTrain()!=="fuerza"&&pr.state!=="hold"){const cp=pr.state==="cap"||seniorCap();return{act:"walkUp",title:cp?"Caminata: puedes caminar más":"¡Estás listo para caminar más!",big:`Caminata ${t.plan.walk} → ${wu} min`,why:`${NEED} caminatas cómodas seguidas`+(cp?`. La fuerza se mantiene en la etapa ${t.stage} hasta que tu kinesiólogo lo autorice`:""),btn:sdn?`Usar ${wu} minutos desde la próxima caminata`:`Subir la caminata a ${wu} minutos desde hoy`}}return null}
 function lvUpCard(inEnt){const u=lvUp();if(!u)return"";uxHit("lvup_seen");if(!inEnt&&S.lvSkip===today()+u.act)return"";
- return`<div class="card lvup" role="status"><div class="lvarr" aria-hidden="true">⬆</div><div class="lvt">${u.title}</div><div class="lvbig">${u.big}</div><div class="lvwhy">✓ ${u.why}</div><button class="btn lvbtn tap" data-act="${u.act}">${u.btn}</button>${inEnt?"":`<button class="link tap lvno" data-act="lvSkip" data-k="${u.act}">Hoy no</button>`}</div>`}
+ return`<div class="card lvup" role="status"><div class="lvarr" aria-hidden="true">⬆</div><div class="lvt">${u.title}</div><div class="lvbig">${u.big}</div><div class="lvwhy">✓ ${u.why}</div>${u.list?`<p class="lvlh">Así cambia tu pauta:</p>${u.list}`:""}<button class="btn lvbtn tap" data-act="${u.act}">${u.btn}</button>${inEnt?"":`<button class="link tap lvno" data-act="lvSkip" data-k="${u.act}">Hoy no</button>`}</div>`}
 setTimeout(()=>{A.lvSkip=e=>{S.lvSkip=today()+e.dataset.k;save();render()}},0);
 function vRxHoy(){if(!S.onboard||!S.onboard.health)return"";const L=SH.mine.filter(x=>Array.isArray(x.rx)&&x.rx.length);if(!L.length)return"";if(rxPause())return rxPausedCard(L.flatMap(x=>x.rx));
  const PP=L.flatMap(x=>x.rx.map(it=>[it,x.email])).filter(a=>rxOn(a[0])),its=PP.map(a=>a[0]),who=PP.map(a=>a[1]),n=its.filter(it=>rxIsDone(rxKey(it))).length,all=n===its.length;
